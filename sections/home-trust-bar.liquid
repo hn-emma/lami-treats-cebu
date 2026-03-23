@@ -1,0 +1,37 @@
+<div class="bg-sand border-y border-sand-dark py-3 px-6">
+  <div class="max-w-5xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-2">
+    {%- for block in section.blocks -%}
+      <div class="flex items-center gap-2 text-xs text-bark/70 font-medium" {{ block.shopify_attributes }}>
+        <span>{{ block.settings.icon }}</span>
+        {{ block.settings.label }}
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Trust Bar",
+  "blocks": [
+    {
+      "type": "trust_item",
+      "name": "Trust Item",
+      "settings": [
+        { "type": "text", "id": "icon", "label": "Icon (emoji)", "default": "🚚" },
+        { "type": "text", "id": "label", "label": "Label", "default": "Free shipping ₱1,500+" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Bar",
+      "blocks": [
+        { "type": "trust_item", "settings": { "icon": "🚚", "label": "Free shipping ₱1,500+" } },
+        { "type": "trust_item", "settings": { "icon": "❄️", "label": "Fresh & sealed packaging" } },
+        { "type": "trust_item", "settings": { "icon": "🇵🇭", "label": "Made in Cebu" } },
+        { "type": "trust_item", "settings": { "icon": "💳", "label": "COD & GCash accepted" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

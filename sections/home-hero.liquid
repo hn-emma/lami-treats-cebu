@@ -1,0 +1,75 @@
+<section class="bg-cebu-green-dark relative overflow-hidden py-20 px-6">
+  <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <div class="inline-flex items-center gap-2 bg-mango/20 border border-mango/40 text-yellow-300 text-[10px] font-medium tracking-widest uppercase px-3 py-1 rounded-full mb-5">
+        🌴 Authentic Cebu Delicacies
+      </div>
+      <h1 class="font-display text-4xl md:text-5xl font-black text-mango-light leading-tight mb-4">
+        {{ section.settings.heading }}
+      </h1>
+      <p class="text-white/70 text-sm leading-relaxed mb-7 max-w-sm">
+        {{ section.settings.subheading }}
+      </p>
+      <div class="flex gap-3 flex-wrap">
+        <a
+          href="{{ section.settings.primary_btn_url }}"
+          class="bg-mango text-bark font-medium text-sm px-6 py-3 rounded-lg hover:bg-mango/90 transition"
+        >
+          {{ section.settings.primary_btn_label }}
+        </a>
+        <a
+          href="{{ section.settings.secondary_btn_url }}"
+          class="border border-white/30 text-mango-light text-sm px-6 py-3 rounded-lg hover:bg-white/10 transition"
+        >
+          {{ section.settings.secondary_btn_label }}
+        </a>
+      </div>
+      <div class="flex gap-8 mt-8">
+        <div>
+          <div class="font-display text-xl font-bold text-mango-light">10K+</div>
+          <div class="text-[10px] text-white/50 uppercase tracking-wider">Happy Customers</div>
+        </div>
+        <div>
+          <div class="font-display text-xl font-bold text-mango-light">50+</div>
+          <div class="text-[10px] text-white/50 uppercase tracking-wider">Products</div>
+        </div>
+        <div>
+          <div class="font-display text-xl font-bold text-mango-light">4.9★</div>
+          <div class="text-[10px] text-white/50 uppercase tracking-wider">Rating</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3 h-64">
+      {%- if section.settings.hero_image_1 != blank -%}
+        <div class="row-span-2 rounded-xl overflow-hidden">
+          {{ section.settings.hero_image_1 | image_url: width: 400 | image_tag: class: 'w-full h-full object-cover' }}
+        </div>
+      {%- else -%}
+        <div class="row-span-2 rounded-xl bg-white/10 flex items-center justify-center text-5xl">🥭</div>
+      {%- endif -%}
+      <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🍪</div>
+      <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🎁</div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Taste the Heart of Cebu" },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Hand-picked pasalubong delivered fresh to your door."
+    },
+    { "type": "image_picker", "id": "hero_image_1", "label": "Main hero image" },
+    { "type": "text", "id": "primary_btn_label", "label": "Primary button", "default": "Shop All Pasalubong" },
+    { "type": "url", "id": "primary_btn_url", "label": "Primary button URL", "default": "/collections/all" },
+    { "type": "text", "id": "secondary_btn_label", "label": "Secondary button", "default": "Build a Bundle 📦" },
+    { "type": "url", "id": "secondary_btn_url", "label": "Secondary button URL", "default": "/pages/bundle-builder" }
+  ],
+  "presets": [{ "name": "Hero" }]
+}
+{% endschema %}
