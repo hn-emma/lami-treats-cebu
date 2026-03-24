@@ -1,172 +1,137 @@
-<div class="max-w-5xl mx-auto px-6 py-8">
-  {%- for filter in collection.filters -%}
-    {%- if filter.param_name == 'filter.p.product_type' -%}
-      {%- assign type_filters = filter -%}
-    {%- endif -%}
-  {%- endfor -%}
-
-  <div id="type-pills-container">
-    {%- if type_filters != null -%}
-      <div class="flex flex-wrap items-center gap-2 mb-8">
-        <button
-          data-url="{{ collection.url }}"
-          onclick="filterFetch(this.dataset.url)"
-          class="
-            type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
-            {%- assign has_active_type = false -%}
-            {%- for fv in type_filters.values -%}
-              {%- if fv.active -%}{%- assign has_active_type = true -%}{%- endif -%}
-            {%- endfor -%}
-            {% if has_active_type == false %} bg-cebu-green text-white border-cebu-green shadow-sm
-            {% else %} bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green
-            {% endif %}
-          "
-        >
-          All
-        </button>
-        {%- for filter_value in type_filters.values -%}
-          <button
-            data-url="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}"
-            onclick="filterFetch(this.dataset.url)"
-            class="
-              type-pill text-xs font-medium px-4 py-2 rounded-full border transition-all duration-200 cursor-pointer
-              {% if filter_value.active %} bg-cebu-green text-white border-cebu-green shadow-sm
-              {% elsif filter_value.count == 0 %} bg-white text-bark/30 border-bark/10 cursor-not-allowed opacity-50
-              {% else %} bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green
-              {% endif %}
-            "
-          >
-            {{ filter_value.label }}
-            <span class="{% if filter_value.active %}text-white/70{% else %}text-bark/35{% endif %} ml-1 text-[10px]">
-              {{ filter_value.count }}
-            </span>
-          </button>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-  </div>
-
-  <div class="flex gap-8 items-start">
-    <!-- MAIN CONTENT -->
-    <div class="flex-1 min-w-0">
-      <!-- TOOLBAR -->
-      <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <!-- Mobile filter toggle -->
-        <button
-          class="md:hidden flex items-center gap-2 text-xs font-medium border border-bark/15 rounded-lg px-4 py-2 bg-white hover:border-cebu-green hover:text-cebu-green transition-colors"
-          onclick="toggleMobileFilters()"
-        >
-          ⚙ Filters
-          {%- assign active_count = 0 -%}
+{%- paginate collection.products by section.settings.products_per_page -%}
+  <div class="collection max-w-5xl mx-auto px-6 py-8">
+    <div class="collection-inner flex flex-col md:flex-row gap-8">
+      <collection-filters
+        class="collection-filters"
+        data-section-id="{{ section.id }}"
+      >
+        <div class="collection-filters__active-filters flex flex-wrap gap-2 mb-5">
           {%- for filter in collection.filters -%}
             {%- unless filter.param_name == 'filter.p.product_type' -%}
-              {%- for fv in filter.values -%}
-                {%- if fv.active -%}
-                  {%- assign active_count = active_count | plus: 1 -%}
-                {%- endif -%}
+              {%- for value in filter.active_values -%}
+                <button
+                  data-remove-url="{{ value.url_to_remove }}"
+                  class="filter-remove-btn inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green px-3 py-1 rounded-full text-xs border border-cebu-green/20 hover:bg-cebu-green/20 transition-colors cursor-pointer"
+                >
+                  {{ value.label }} ✕
+                </button>
               {%- endfor -%}
             {%- endunless -%}
           {%- endfor -%}
-          {%- if active_count > 0 -%}
-            <span class="bg-cebu-green text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-              {{ active_count }}
-            </span>
+        </div>
+      </collection-filters>
+
+      <div class="collection-grid flex-1 min-w-0">
+        <div class="collection-type-pills flex flex-wrap gap-2 mb-6">
+          {%- assign type_filter = collection.filters | where: 'label', 'Product type' | first -%}
+          {%- if type_filter -%}
+            {%- assign has_active_type = false -%}
+            {%- for value in type_filter.values -%}
+              {%- if value.active -%}{%- assign has_active_type = true -%}{%- endif -%}
+            {%- endfor -%}
+
+            <button
+              data-url="{{ collection.url }}"
+              class="
+                type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
+                {% if has_active_type == false %}bg-cebu-green text-white border-cebu-green
+                {% else %}bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green{% endif %}
+              "
+            >
+              All
+            </button>
+
+            {%- for value in type_filter.values -%}
+              <button
+                data-url="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                class="
+                  type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
+                  {% if value.active %}bg-cebu-green text-white border-cebu-green
+                  {% elsif value.count == 0 %}bg-white text-bark/30 border-bark/10 opacity-50 cursor-not-allowed
+                  {% else %}bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green{% endif %}
+                "
+                {% if value.count == 0 and value.active == false %}
+                  disabled
+                {% endif %}
+              >
+                {{ value.label }}
+                <span class="{% if value.active %}text-white/70{% else %}text-bark/35{% endif %} ml-0.5 text-[10px]">
+                  {{ value.count }}
+                </span>
+              </button>
+            {%- endfor -%}
           {%- endif -%}
-        </button>
+        </div>
 
-        <span class="text-xs text-bark/50" id="product-count">
-          {{ collection.products_count }}
-          {{ collection.products_count | pluralize: 'product', 'products' }}
-        </span>
-      </div>
+        <div class="mb-5">
+          <span class="text-xs text-bark/50" id="product-count">
+            {{ collection.products_count }}
+            {{ collection.products_count | pluralize: 'product', 'products' }}
+          </span>
+        </div>
 
-      {% render 'collection-active-filters' %}
-
-      <!-- PRODUCT GRID -->
-      {% render 'product-grid', section: section %}
-    </div>
-  </div>
-
-  <!-- MOBILE FILTER DRAWER (price + availability only) -->
-  <div id="mobile-filter-drawer" class="fixed inset-0 z-50 hidden" aria-hidden="true">
-    <div class="absolute inset-0 bg-bark/50" onclick="toggleMobileFilters()"></div>
-    <div class="absolute left-0 top-0 bottom-0 w-72 bg-white overflow-y-auto p-6 shadow-2xl">
-      <div class="flex items-center justify-between mb-6">
-        <span class="font-display text-lg font-bold text-bark">Filters</span>
-        <button
-          onclick="toggleMobileFilters()"
-          class="w-8 h-8 rounded-full border border-bark/15 flex items-center justify-center text-sm hover:bg-sand"
-        >
-          ✕
-        </button>
-      </div>
-
-      {%- for filter in collection.filters -%}
-        {%- unless filter.param_name == 'filter.p.product_type' -%}
-          <div class="mb-6 pb-6 border-b border-bark/10 last:border-0">
-            <div class="text-xs font-medium uppercase tracking-wider text-bark/70 mb-3">
-              {{ filter.label }}
+        <div class="collection-products grid grid-cols-2 md:grid-cols-{{ section.settings.columns_desktop }} gap-4">
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product %}
+          {%- else -%}
+            <div class="col-span-full text-center py-20">
+              <div class="text-5xl mb-4 opacity-30">🥭</div>
+              <h3 class="font-display text-lg font-bold text-bark mb-2">No products found</h3>
+              <p class="text-sm text-bark/50 mb-6">Try clearing your filters.</p>
+              <button
+                data-url="{{ collection.url }}"
+                class="filter-clear-btn bg-cebu-green text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-cebu-green-dark transition-colors cursor-pointer"
+              >
+                Clear Filters
+              </button>
             </div>
-            {%- case filter.type -%}
-              {%- when 'list' -%}
-                <ul class="space-y-2.5">
-                  {%- for filter_value in filter.values -%}
-                    <li>
-                      <label class="flex items-center gap-2.5 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="{{ filter_value.param_name }}"
-                          value="{{ filter_value.value }}"
-                          {% if filter_value.active %}
-                            checked
-                          {% endif %}
-                          onchange="handleFilterChange()"
-                          class="filter-checkbox w-3.5 h-3.5 rounded border-bark/30 text-cebu-green focus:ring-cebu-green"
-                        >
-                        <span class="text-sm text-bark/70">{{ filter_value.label }}</span>
-                        <span class="text-xs text-bark/35 ml-auto">{{ filter_value.count }}</span>
-                      </label>
-                    </li>
-                  {%- endfor -%}
-                </ul>
-                <div class="flex items-center gap-2">
-                  <input
-                    type="number"
-                    name="{{ filter.min_value.param_name }}"
-                    value="{{ filter.min_value.value }}"
-                    placeholder="Min"
-                    class="flex-1 border border-bark/15 rounded-lg px-3 py-2 text-sm outline-none focus:border-cebu-green"
-                  >
-                  <span class="text-bark/30">—</span>
-                  <input
-                    type="number"
-                    name="{{ filter.max_value.param_name }}"
-                    value="{{ filter.max_value.value }}"
-                    placeholder="Max"
-                    class="flex-1 border border-bark/15 rounded-lg px-3 py-2 text-sm outline-none focus:border-cebu-green"
-                  >
-                </div>
-            {%- endcase -%}
-          </div>
-        {%- endunless -%}
-      {%- endfor -%}
+          {%- endfor -%}
+        </div>
 
-      <button
-        onclick="handleFilterChange(); toggleMobileFilters()"
-        class="w-full bg-cebu-green text-white text-sm font-medium py-3 rounded-xl hover:bg-cebu-green-dark transition-colors mt-4"
-      >
-        Apply Filters
-      </button>
-      <button
-        data-url="{{ collection.url }}"
-        onclick="filterFetch(this.dataset.url); toggleMobileFilters()"
-        class="block w-full text-center text-sm text-bark/50 mt-3 hover:text-bark transition-colors"
-      >
-        Clear all filters
-      </button>
+        {%- if paginate.pages > 1 -%}
+          <div class="collection-pagination flex justify-center items-center gap-2 mt-12">
+            {%- if paginate.previous -%}
+              <a
+                href="{{ paginate.previous.url }}"
+                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+              >
+                ‹
+              </a>
+            {%- endif -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a
+                  href="{{ part.url }}"
+                  class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:bg-cebu-green hover:text-white hover:border-cebu-green transition-colors"
+                >
+                  {{ part.title }}
+                </a>
+              {%- else -%}
+                {%- if part.title == paginate.current_page -%}
+                  <span class="w-9 h-9 rounded-lg bg-cebu-green text-white text-sm flex items-center justify-center">
+                    {{ part.title }}
+                  </span>
+                {%- else -%}
+                  <span class="w-9 h-9 rounded-lg border border-bark/15 text-sm flex items-center justify-center text-bark/40">
+                    {{ part.title }}
+                  </span>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if paginate.next -%}
+              <a
+                href="{{ paginate.next.url }}"
+                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+              >
+                ›
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
     </div>
   </div>
-</div>
+{%- endpaginate -%}
 
 <script src="{{ 'collection-filters.js' | asset_url }}" defer></script>
 

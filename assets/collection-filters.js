@@ -1,147 +1,127 @@
-// ─── Core fetch function ──────────────────────────────────────────────────────
-async function filterFetch(url) {
-  const grid = document.getElementById('product-grid');
-  if (!grid) return;
+class CollectionFilters extends HTMLElement {
+  constructor() {
+    super();
+    this.abortController = null;
 
-  // 1. OPTIMISTIC UI: Give immediate feedback
-  grid.style.opacity = '0.5';
-  grid.style.transition = 'opacity 0.1s ease';
-
-  try {
-    // 2. USE SECTION RENDERING API
-    // We append the section_id so Shopify only renders the relevant liquid file.
-    const sectionId = document
-      .querySelector('.shopify-section[id^="shopify-section-main-collection"]')
-      .id.replace('shopify-section-', '');
-    const renderUrl = new URL(url, window.location.origin);
-    renderUrl.searchParams.set('section_id', sectionId);
-
-    const response = await fetch(renderUrl.toString());
-    if (!response.ok) throw new Error('Network response was not ok');
-
-    const html = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    // 3. SWAP ONLY THE NECESSARY PARTS
-    // Note: Since we used section_id, 'doc' is just the section content
-    const selectors = ['#product-grid', '#active-filters', '#product-count', '#type-pills-container'];
-
-    selectors.forEach((selector) => {
-      const oldEl = document.querySelector(selector);
-      const newEl = doc.querySelector(selector);
-      if (oldEl && newEl) oldEl.innerHTML = newEl.innerHTML;
-    });
-
-    // Sync sidebar checkboxes
-    const newCheckboxes = doc.querySelectorAll('.filter-checkbox');
-    const currentCheckboxes = document.querySelectorAll('.filter-checkbox');
-    newCheckboxes.forEach((cb, i) => {
-      if (currentCheckboxes[i]) {
-        currentCheckboxes[i].checked = cb.checked;
-        currentCheckboxes[i].disabled = cb.disabled;
-      }
-    });
-
-    // Update browser URL
-    history.pushState({ url }, '', url);
-  } catch (error) {
-    console.error('Filter Error:', error);
-    window.location.href = url; // Fallback
-  } finally {
-    grid.style.opacity = '1';
-  }
-}
-
-// ─── Update Pill Styles Instantly ─────────────────────────────────────────────
-function handlePillClick(button) {
-  const url = button.dataset.url;
-
-  // Instant visual swap for the clicked pill
-  const allPills = document.querySelectorAll('.type-pill');
-  allPills.forEach((p) => {
-    p.classList.remove('bg-cebu-green', 'text-white', 'border-cebu-green');
-    p.classList.add('bg-white', 'text-bark/60', 'border-bark/15');
-  });
-
-  button.classList.remove('bg-white', 'text-bark/60');
-  button.classList.add('bg-cebu-green', 'text-white', 'border-cebu-green');
-
-  filterFetch(url);
-}
-
-// ─── Build filter URL from current checkbox state ─────────────────────────────
-function buildFilterUrl() {
-  const url = new URL(window.location.href);
-
-  // Remove all existing filter params
-  [...url.searchParams.keys()].forEach((key) => {
-    if (key.startsWith('filter.')) url.searchParams.delete(key);
-  });
-
-  // Add all checked filter checkboxes
-  document.querySelectorAll('.filter-checkbox:checked').forEach((checkbox) => {
-    url.searchParams.append(checkbox.name, checkbox.value);
-  });
-
-  // Keep current sort
-  const sortSelect = document.getElementById('sort-select');
-  if (sortSelect && sortSelect.value) {
-    url.searchParams.set('sort_by', sortSelect.value);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handlePopState = this.handlePopState.bind(this);
   }
 
-  // Reset to page 1 when filters change
-  url.searchParams.delete('page');
-
-  return url.toString();
-}
-
-// ─── Handle checkbox filter change ───────────────────────────────────────────
-function handleFilterChange() {
-  filterFetch(buildFilterUrl());
-}
-
-// ─── Mobile filter drawer ─────────────────────────────────────────────────────
-function toggleMobileFilters() {
-  const drawer = document.getElementById('mobile-filter-drawer');
-  if (!drawer) return;
-  drawer.classList.toggle('hidden');
-  drawer.setAttribute('aria-hidden', drawer.classList.contains('hidden'));
-  document.body.style.overflow = drawer.classList.contains('hidden') ? '' : 'hidden';
-}
-
-// ─── Event listeners (runs after DOM is ready) ────────────────────────────────
-document.addEventListener('DOMContentLoaded', function () {
-  // Sort change
-  const sortSelect = document.getElementById('sort-select');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', function () {
-      const url = new URL(window.location.href);
-      url.searchParams.set('sort_by', this.value);
-      filterFetch(url.toString());
-    });
+  get sectionId() {
+    return this.getAttribute('data-section-id');
   }
 
-  // Pagination clicks (event delegation on grid)
-  const grid = document.getElementById('product-grid');
-  if (grid) {
-    grid.addEventListener('click', function (e) {
-      const link = e.target.closest('a[href]');
-      if (!link) return;
-      const href = link.getAttribute('href');
-      if (href && href.includes(window.location.pathname)) {
-        e.preventDefault();
-        filterFetch(href);
-      }
-    });
+  connectedCallback() {
+    document.addEventListener('change', this.handleChange);
+    document.addEventListener('click', this.handleClick);
+    window.addEventListener('popstate', this.handlePopState);
   }
 
-  // Browser back/forward
-  window.addEventListener('popstate', function (e) {
-    if (e.state && e.state.url) {
-      filterFetch(e.state.url);
-    } else {
-      filterFetch(window.location.href);
+  disconnectedCallback() {
+    document.removeEventListener('change', this.handleChange);
+    document.removeEventListener('click', this.handleClick);
+    window.removeEventListener('popstate', this.handlePopState);
+  }
+
+  handleChange(e) {
+    const input = e.target.closest('.filter-checkbox');
+    if (input) {
+      const url = input.checked ? input.dataset.addUrl : input.dataset.removeUrl;
+      if (url) this.fetchSection(url);
     }
-  });
-});
+  }
+
+  handleClick(e) {
+    const target = e.target;
+
+    const removeBtn = target.closest('.filter-remove-btn, .filter-clear-btn');
+    if (removeBtn) {
+      const url = removeBtn.dataset.url || removeBtn.dataset.removeUrl;
+      if (url) {
+        e.preventDefault();
+        this.fetchSection(url);
+      }
+    }
+
+    const typePill = target.closest('.type-pill');
+    if (typePill && typePill.dataset.url) {
+      e.preventDefault();
+      this.fetchSection(typePill.dataset.url);
+    }
+
+    const paginationLink = target.closest('.pagination-link');
+    if (paginationLink && paginationLink.href) {
+      e.preventDefault();
+      this.fetchSection(paginationLink.href);
+
+      document.querySelector('.collection-inner').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  handlePopState(e) {
+    if (e.state) {
+      this.fetchSection(window.location.href, false);
+    }
+  }
+
+  fetchSection(url, pushState = true) {
+    if (this.abortController) {
+      this.abortController.abort();
+    }
+    this.abortController = new AbortController();
+
+    const grid = document.querySelector('.collection-products');
+    if (grid) {
+      grid.style.opacity = '0.4';
+      grid.style.pointerEvents = 'none';
+    }
+
+    const fetchUrl = new URL(url, window.location.origin);
+    fetchUrl.searchParams.set('section_id', this.sectionId);
+
+    fetch(fetchUrl.toString(), { signal: this.abortController.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error('Fetch failed');
+        return response.text();
+      })
+      .then((html) => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const areasToUpdate = ['.collection-filters', '.collection-grid'];
+
+        areasToUpdate.forEach((selector) => {
+          const currentArea = document.querySelector(selector);
+          const newArea = doc.querySelector(selector);
+          if (currentArea && newArea) {
+            currentArea.innerHTML = newArea.innerHTML;
+          }
+        });
+
+        if (pushState) {
+          const cleanUrl = new URL(url, window.location.origin);
+          cleanUrl.searchParams.delete('section_id');
+          window.history.pushState({ url: cleanUrl.toString() }, '', cleanUrl.toString());
+        }
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') return;
+
+        const fallbackUrl = new URL(url, window.location.origin);
+        fallbackUrl.searchParams.delete('section_id');
+        window.location.href = fallbackUrl.toString();
+      })
+      .finally(() => {
+        const updatedGrid = document.querySelector('.collection-products');
+        if (updatedGrid) {
+          updatedGrid.style.opacity = '1';
+          updatedGrid.style.pointerEvents = '';
+        }
+      });
+  }
+}
+
+if (!customElements.get('collection-filters')) {
+  customElements.define('collection-filters', CollectionFilters);
+}
