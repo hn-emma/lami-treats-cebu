@@ -1,0 +1,228 @@
+<footer class="bg-bark text-mango-light/85 pt-12 pb-6 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+      <div class="col-span-2 md:col-span-1">
+        <div class="font-display text-lg font-bold text-mango-light mb-3">🌴 {{ shop.name }}</div>
+        <p class="text-xs leading-relaxed text-mango-light/50 mb-4">
+          {{ section.settings.description }}
+        </p>
+        <div class="space-y-1.5 text-xs text-mango-light/50">
+          {%- if section.settings.address != blank -%}
+            <div>📍 {{ section.settings.address }}</div>
+          {%- endif -%}
+          {%- if section.settings.email != blank -%}
+            <div>📧 {{ section.settings.email }}</div>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.facebook_url != blank
+          or section.settings.instagram_url != blank
+          or section.settings.tiktok_url != blank
+        -%}
+          <div class="flex gap-3 mt-5">
+            {%- if section.settings.facebook_url != blank -%}
+              <a
+                href="{{ section.settings.facebook_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-mango hover:text-bark transition-colors duration-200"
+                aria-label="Facebook"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+              </a>
+            {%- endif -%}
+
+            {%- if section.settings.instagram_url != blank -%}
+              <a
+                href="{{ section.settings.instagram_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-mango hover:text-bark transition-colors duration-200"
+                aria-label="Instagram"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+              </a>
+            {%- endif -%}
+
+            {%- if section.settings.tiktok_url != blank -%}
+              <a
+                href="{{ section.settings.tiktok_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-mango hover:text-bark transition-colors duration-200"
+                aria-label="TikTok"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                </svg>
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'link_column' -%}
+          <div {{ block.shopify_attributes }}>
+            <h4 class="font-display text-sm font-bold text-mango-light mb-4">
+              {{ block.settings.title }}
+            </h4>
+            <div class="space-y-2.5">
+              {%- for link in block.settings.menu.links -%}
+                <a
+                  href="{{ link.url }}"
+                  class="block text-xs text-mango-light/50 hover:text-mango-light transition-colors duration-200"
+                >
+                  {{ link.title }}
+                </a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="border-t border-white/10 pt-6 mb-5">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-[10px] text-mango-light/30 uppercase tracking-wider mr-2">We accept</span>
+        {%- assign payment_methods = 'Visa,Mastercard,GCash,Maya,COD' | split: ',' -%}
+        {%- for method in payment_methods -%}
+          <span class="bg-white/10 text-mango-light/60 text-[10px] font-medium px-2.5 py-1 rounded">
+            {{ method }}
+          </span>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-[10px] text-mango-light/30">
+      <span
+        >© {{ 'now' | date: '%Y' }}
+        {{ shop.name }}. All rights reserved.</span
+      >
+      <div class="flex items-center gap-4">
+        <a href="/policies/privacy-policy" class="hover:text-mango-light/60 transition-colors">Privacy Policy</a>
+        <a href="/policies/terms-of-service" class="hover:text-mango-light/60 transition-colors">Terms of Service</a>
+        <a href="/policies/refund-policy" class="hover:text-mango-light/60 transition-colors">Refund Policy</a>
+        <span>🛡️ Secured by Shopify</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Brand description",
+      "default": "Authentic pasalubong from the heart of Cebu, delivered with love nationwide."
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "Mandaue City, Cebu, Philippines"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "hello@lamitreatscrebu.com"
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "TikTok URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link Column",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Column title",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        {
+          "type": "link_column",
+          "settings": { "title": "Shop" }
+        },
+        {
+          "type": "link_column",
+          "settings": { "title": "Help" }
+        },
+        {
+          "type": "link_column",
+          "settings": { "title": "About" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

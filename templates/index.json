@@ -12,8 +12,16 @@
       "type": "featured-products",
       "settings": {}
     },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {}
+    },
     "story": {
       "type": "story-section",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
       "settings": {}
     },
   },
@@ -21,6 +29,8 @@
     "hero",
     "trust",
     "featured",
+    "testimonials",
     "story",
+    "newsletter"
   ]
 }

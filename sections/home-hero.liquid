@@ -47,8 +47,22 @@
       {%- else -%}
         <div class="row-span-2 rounded-xl bg-white/10 flex items-center justify-center text-5xl">🥭</div>
       {%- endif -%}
-      <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🍪</div>
-      <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🎁</div>
+
+      {%- if section.settings.hero_image_2 != blank -%}
+        <div class="rounded-xl overflow-hidden">
+          {{ section.settings.hero_image_2 | image_url: width: 400 | image_tag: class: 'w-full h-full object-cover' }}
+        </div>
+      {%- else -%}
+        <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🍪</div>
+      {%- endif -%}
+
+      {%- if section.settings.hero_image_3 != blank -%}
+        <div class="rounded-xl overflow-hidden">
+          {{ section.settings.hero_image_3 | image_url: width: 400 | image_tag: class: 'w-full h-full object-cover' }}
+        </div>
+      {%- else -%}
+        <div class="rounded-xl bg-white/10 flex items-center justify-center text-3xl">🎁</div>
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -65,6 +79,8 @@
       "default": "Hand-picked pasalubong delivered fresh to your door."
     },
     { "type": "image_picker", "id": "hero_image_1", "label": "Main hero image" },
+    { "type": "image_picker", "id": "hero_image_2", "label": "Secondary hero image" },
+    { "type": "image_picker", "id": "hero_image_3", "label": "Tertiary hero image" },
     { "type": "text", "id": "primary_btn_label", "label": "Primary button", "default": "Shop All Pasalubong" },
     { "type": "url", "id": "primary_btn_url", "label": "Primary button URL", "default": "/collections/all" },
     { "type": "text", "id": "secondary_btn_label", "label": "Secondary button", "default": "Build a Bundle 📦" },

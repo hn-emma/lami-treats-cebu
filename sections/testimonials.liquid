@@ -1,0 +1,118 @@
+<section class="py-14 px-6 bg-white">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1">
+        {{ section.settings.label }}
+      </div>
+      <h2 class="font-display text-3xl font-bold text-bark">
+        {{ section.settings.title }}
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'testimonial' -%}
+          <div class="bg-sand border border-sand-dark rounded-2xl p-6" {{ block.shopify_attributes }}>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-9 h-9 rounded-full bg-sand-dark flex items-center justify-center text-base flex-shrink-0">
+                {{ block.settings.avatar }}
+              </div>
+              <div>
+                <div class="text-sm font-medium text-bark">{{ block.settings.name }}</div>
+                <div class="text-[10px] text-bark/50">{{ block.settings.location }}</div>
+              </div>
+              <div class="text-mango text-xs ml-auto">★★★★★</div>
+            </div>
+            <p class="text-xs text-bark/65 leading-relaxed italic">"{{ block.settings.review }}"</p>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Section label",
+      "default": "Reviews"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "What Our Customers Say"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "text",
+          "id": "avatar",
+          "label": "Avatar (emoji)",
+          "default": "👩"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name",
+          "default": "Maria Santos"
+        },
+        {
+          "type": "text",
+          "id": "location",
+          "label": "Location",
+          "default": "📍 Manila"
+        },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review",
+          "default": "The dried mangoes are absolutely amazing — so much better than anything I've found in Manila!"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "avatar": "👩",
+            "name": "Maria Santos",
+            "location": "📍 Manila",
+            "review": "The dried mangoes are absolutely amazing — so much better than anything I've found in Manila. My family keeps asking me to order more!"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "avatar": "👨",
+            "name": "John Reyes",
+            "location": "📍 Davao",
+            "review": "Ordered the pasalubong bundle for my mom's birthday. The packaging was beautiful and the gift note was a lovely touch. Will order again!"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "avatar": "👩",
+            "name": "Ana Cruz",
+            "location": "📍 Cebu City",
+            "review": "Even as a Cebuano, I love ordering from here for gifting. Everything is neatly packed and the tablea is my absolute favorite!"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

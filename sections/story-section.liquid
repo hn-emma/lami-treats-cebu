@@ -1,0 +1,167 @@
+<section class="bg-cebu-green-dark py-16 px-6 relative overflow-hidden">
+  <div class="absolute right-0 top-0 bottom-0 w-1/2 opacity-5 pointer-events-none select-none flex items-center justify-center text-[20rem] leading-none">
+    🌴
+  </div>
+
+  <div class="max-w-5xl mx-auto relative">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-3">
+          {{ section.settings.label }}
+        </div>
+        <h2 class="font-display text-3xl font-bold text-mango-light mb-5 leading-tight">
+          {{ section.settings.title }}
+        </h2>
+        <p class="text-sm text-white/65 leading-relaxed mb-8">
+          {{ section.settings.description }}
+        </p>
+
+        <div class="space-y-5">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'step' -%}
+              <div class="flex gap-4 items-start" {{ block.shopify_attributes }}>
+                <div class="w-9 h-9 rounded-full bg-mango/20 border border-mango/40 flex items-center justify-center text-base flex-shrink-0 mt-0.5">
+                  {{ block.settings.icon }}
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-mango-light mb-1">
+                    {{ block.settings.title }}
+                  </div>
+                  <div class="text-xs text-white/50 leading-relaxed">
+                    {{ block.settings.subtitle }}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.settings.btn_label != blank -%}
+          <a
+            href="{{ section.settings.btn_url }}"
+            class="inline-flex items-center gap-2 mt-8 bg-mango text-bark text-sm font-medium px-6 py-3 rounded-lg hover:bg-mango/90 transition-colors duration-200"
+          >
+            {{ section.settings.btn_label }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <div class="rounded-2xl overflow-hidden bg-white/6 border border-white/10 min-h-72 flex items-center justify-center">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 600
+            | image_tag: class: 'w-full h-full object-cover', alt: section.settings.image.alt
+          }}
+        {%- else -%}
+          <div class="text-center p-10">
+            <div class="text-6xl mb-4 opacity-60">🗺️</div>
+            <div class="text-xs text-white/40 leading-relaxed">
+              From the farms of Toledo City<br>
+              to your doorstep — with love 🌴
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Story Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Section label",
+      "default": "Our Story"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "From Cebu to You 🌴"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Every pasalubong tells a story — of farmers in Toledo, of bakers in Mandaue, of generations passing down recipes. We bring those stories straight to your doorstep."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image (optional)"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button label",
+      "default": "Learn Our Story"
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": "Button URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Story Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji)",
+          "default": "🌱"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Step title",
+          "default": "Sourced from local Cebuano producers"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Step subtitle",
+          "default": "Direct from farms and family bakeries"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story Section",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "icon": "🌱",
+            "title": "Sourced from local Cebuano producers",
+            "subtitle": "Direct from farms and family bakeries"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "icon": "📦",
+            "title": "Carefully packed & quality checked",
+            "subtitle": "Sealed fresh, labeled with origin"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "icon": "🚚",
+            "title": "Delivered nationwide with love",
+            "subtitle": "2–5 day delivery, tracking included"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,19 +1,51 @@
-<section class="py-14 px-6 max-w-5xl mx-auto">
-  <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1">{{ section.settings.label }}</div>
-  <h2 class="font-display text-2xl font-bold text-bark mb-2">{{ section.settings.title }}</h2>
-  <p class="text-sm text-bark/60 mb-8">{{ section.settings.subtitle }}</p>
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {%- for product in section.settings.collection.products limit: 4 -%}
-      {% render 'product-card', product: product %}
-    {%- endfor -%}
-  </div>
-  <div class="text-center mt-8">
-    <a
-      href="{{ section.settings.collection.url }}"
-      class="border border-cebu-green text-cebu-green text-sm font-medium px-6 py-2.5 rounded-lg hover:bg-cebu-green hover:text-white transition"
-    >
-      View All Products →
-    </a>
+<section class="py-14 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+      <div>
+        <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1">
+          {{ section.settings.label }}
+        </div>
+        <h2 class="font-display text-3xl font-bold text-bark">
+          {{ section.settings.title }}
+        </h2>
+        <p class="text-sm text-bark/60 mt-2 max-w-md">
+          {{ section.settings.subtitle }}
+        </p>
+      </div>
+      {%- if section.settings.collection != blank -%}
+        <a
+          href="{{ section.settings.collection.url }}"
+          class="text-sm font-medium text-cebu-green border border-cebu-green px-5 py-2 rounded-lg hover:bg-cebu-green hover:text-white transition-colors duration-200 whitespace-nowrap"
+        >
+          View All →
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.collection != blank -%}
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {%- for product in section.settings.collection.products limit: 4 -%}
+          {% render 'product-card', product: product %}
+        {%- else -%}
+          <p class="col-span-4 text-center text-bark/40 text-sm py-10">
+            No products found. Add products to collection in Shopify Admin.
+          </p>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {%- for i in (1..4) -%}
+          <div class="bg-sand rounded-2xl overflow-hidden border border-bark/10">
+            <div class="aspect-square flex items-center justify-center text-5xl">🥭</div>
+            <div class="p-4">
+              <div class="h-3 bg-sand-dark rounded w-3/4 mb-2"></div>
+              <div class="h-3 bg-sand-dark rounded w-1/2"></div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+      <p class="text-center text-xs text-bark/40 mt-4">Featured products here.</p>
+    {%- endif -%}
   </div>
 </section>
 
@@ -21,11 +53,34 @@
 {
   "name": "Featured Products",
   "settings": [
-    { "type": "text", "id": "label", "label": "Label", "default": "Best Sellers" },
-    { "type": "text", "id": "title", "label": "Title", "default": "Lami Kaayo Picks" },
-    { "type": "text", "id": "subtitle", "label": "Subtitle", "default": "Our most-loved Cebu delicacies." },
-    { "type": "collection", "id": "collection", "label": "Collection" }
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Section label",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Lami Kaayo Picks"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Our most-loved Cebu delicacies, packaged with care and ready to ship."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    }
   ],
-  "presets": [{ "name": "Featured Products" }]
+  "presets": [
+    {
+      "name": "Featured Products"
+    }
+  ]
 }
 {% endschema %}

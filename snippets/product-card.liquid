@@ -1,38 +1,59 @@
-<div class="bg-white border border-bark/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+<div class="bg-white border border-bark/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer group">
   <a href="{{ product.url }}">
     <div class="aspect-square bg-sand overflow-hidden">
       {%- if product.featured_image -%}
-        {{ product.featured_image | image_url: width: 400 | image_tag: class: 'w-full h-full object-cover' }}
+        {{
+          product.featured_image
+          | image_url: width: 400
+          | image_tag:
+            class: 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300',
+            alt: product.featured_image.alt
+        }}
       {%- else -%}
         <div class="w-full h-full flex items-center justify-center text-5xl">🥭</div>
       {%- endif -%}
     </div>
   </a>
   <div class="p-4">
-    <div class="flex items-center justify-between mb-1">
-      <div class="text-mango text-xs">★★★★★</div>
+    <div class="flex items-center justify-between mb-2">
+      {%- if product.type != blank -%}
+        <span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-0.5 rounded-full">
+          {{ product.type }}
+        </span>
+      {%- endif -%}
+
       {%- if product.compare_at_price > product.price -%}
-        <span class="bg-red-100 text-red-600 text-[10px] font-medium px-2 py-0.5 rounded-full">Sale</span>
+        <span class="bg-red-100 text-red-600 text-[10px] font-medium px-2 py-0.5 rounded-full ml-auto"> Sale </span>
+      {%- elsif product.tags contains 'new' -%}
+        <span class="bg-mango/15 text-mango-dark text-[10px] font-medium px-2 py-0.5 rounded-full ml-auto"> New </span>
       {%- endif -%}
     </div>
-    <a href="{{ product.url }}" class="block text-sm font-medium text-bark mb-1 hover:text-cebu-green">
+    <a
+      href="{{ product.url }}"
+      class="block text-sm font-medium text-bark mb-1 hover:text-cebu-green transition-colors"
+    >
       {{ product.title }}
     </a>
-    <p class="text-xs text-bark/60 mb-3 leading-relaxed line-clamp-2">
-      {{ product.description | strip_html | truncate: 60 }}
+    <p class="text-xs text-bark/50 mb-3 leading-relaxed line-clamp-2">
+      {{ product.description | strip_html | truncate: 70 }}
     </p>
     <div class="flex items-center justify-between">
       <div>
-        <span class="text-sm font-medium text-mango-dark">{{ product.price | money }}</span>
+        <span class="text-sm font-medium text-mango-dark">
+          {{ product.price | money }}
+        </span>
         {%- if product.compare_at_price > product.price -%}
-          <span class="text-xs text-bark/40 line-through ml-1">{{ product.compare_at_price | money }}</span>
+          <span class="text-xs text-bark/40 line-through ml-1">
+            {{ product.compare_at_price | money }}
+          </span>
         {%- endif -%}
       </div>
       <button
-        class="w-8 h-8 bg-cebu-green rounded-full text-white text-lg flex items-center justify-center hover:bg-cebu-green-dark transition add-to-cart-btn"
-        data-product-id="{{ product.variants.first.id }}"
+        class="w-8 h-8 bg-cebu-green rounded-full text-white flex items-center justify-center hover:bg-cebu-green-dark transition-colors duration-200 add-to-cart-btn"
+        data-variant-id="{{ product.variants.first.id }}"
+        aria-label="Add {{ product.title }} to cart"
       >
-        +
+        <span class="text-lg leading-none">+</span>
       </button>
     </div>
   </div>
