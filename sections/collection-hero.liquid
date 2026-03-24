@@ -1,0 +1,33 @@
+<div class="bg-cebu-green-dark text-white py-12 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center gap-2 text-xs text-white/40 mb-4">
+      <a href="{{ routes.root_url }}" class="hover:text-white/70 transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-white/70">{{ collection.title }}</span>
+    </div>
+
+    <div class="flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="font-display text-3xl font-bold text-mango-light mb-2">
+          {{ collection.title }}
+        </h1>
+        {%- if collection.description != blank -%}
+          <p class="text-sm text-white/55 max-w-lg">
+            {{ collection.description }}
+          </p>
+        {%- endif -%}
+      </div>
+      <div class="text-xs text-white/40">
+        {{ collection.products_count }}
+        {{ collection.products_count | pluralize: 'product', 'products' }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Hero",
+  "presets": [{ "name": "Collection Hero" }]
+}
+{% endschema %}

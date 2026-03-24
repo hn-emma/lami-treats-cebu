@@ -1,6 +1,6 @@
 <nav class="bg-cebu-green sticky top-0 z-50">
   <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-    <a href="/" class="font-display text-lg font-bold text-mango-light">
+    <a href="{{ routes.root_url }}" class="font-display text-lg font-bold text-mango-light">
       🌴 Lami <span class="text-mango">Cebu</span>
     </a>
     <div class="hidden md:flex gap-6">
@@ -11,7 +11,7 @@
       {%- endfor -%}
     </div>
     <div class="flex items-center gap-3">
-      <a href="/search" class="text-white/70 hover:text-white text-sm">🔍</a>
+      <a href="{{ routes.search_url }}" class="text-white/70 hover:text-white text-sm">🔍</a>
       <a href="/wishlist" class="text-white/70 hover:text-white text-sm">♡</a>
       <button id="cart-drawer-trigger" class="relative text-white/70 hover:text-white text-sm">
         🛒

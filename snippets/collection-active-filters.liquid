@@ -1,0 +1,58 @@
+<div id="active-filters">
+  {%- assign has_active_filters = false -%}
+  {%- for filter in collection.filters -%}
+    {%- unless filter.param_name == 'filter.p.product_type' -%}
+      {%- for filter_value in filter.values -%}
+        {%- if filter_value.active -%}
+          {%- assign has_active_filters = true -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value or filter.max_value.value -%}
+          {%- assign has_active_filters = true -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+  {%- if has_active_filters -%}
+    <div class="flex flex-wrap gap-2 mb-5">
+      {%- for filter in collection.filters -%}
+        {%- unless filter.param_name == 'filter.p.product_type' -%}
+          {%- for filter_value in filter.values -%}
+            {%- if filter_value.active -%}
+              <button
+                data-url="{{ filter_value.url_to_remove }}"
+                onclick="filterFetch(this.dataset.url)"
+                class="inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green text-xs font-medium px-3 py-1 rounded-full hover:bg-cebu-green/20 transition-colors"
+              >
+                {{ filter_value.label }}
+                <span class="leading-none">✕</span>
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if filter.type == 'price_range' -%}
+            {%- if filter.min_value.value or filter.max_value.value -%}
+              <button
+                data-url="{{ filter.url_to_remove }}"
+                onclick="filterFetch(this.dataset.url)"
+                class="inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green text-xs font-medium px-3 py-1 rounded-full hover:bg-cebu-green/20 transition-colors"
+              >
+                ₱{{ filter.min_value.value | default: 0 | divided_by: 100 | ceil }} — ₱
+                {{- filter.max_value.value | default: filter.range_max | divided_by: 100 | ceil }}
+                <span class="leading-none">✕</span>
+              </button>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endunless -%}
+      {%- endfor -%}
+      <button
+        data-url="{{ collection.url }}"
+        onclick="filterFetch(this.dataset.url)"
+        class="inline-flex items-center gap-1.5 bg-bark/5 text-bark/50 text-xs font-medium px-3 py-1 rounded-full hover:bg-bark/10 transition-colors"
+      >
+        Clear all ✕
+      </button>
+    </div>
+  {%- endif -%}
+</div>
