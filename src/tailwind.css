@@ -14,3 +14,7 @@
   --font-family-display: 'Playfair Display', serif;
   --font-family-body: 'DM Sans', sans-serif;
 }
+
+#main-product-image {
+  transition: opacity 0.15s ease;
+}

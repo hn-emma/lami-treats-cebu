@@ -1,0 +1,302 @@
+<div class="max-w-5xl mx-auto px-6 py-6">
+  <!-- BREADCRUMB -->
+  <nav class="flex items-center gap-2 text-xs text-bark/40 mb-8">
+    <a href="{{ routes.root_url }}" class="hover:text-bark transition-colors">Home</a>
+    <span>/</span>
+    {%- if product.collections.first -%}
+      <a
+        href="{{ product.collections.first.url }}"
+        class="hover:text-bark transition-colors"
+      >
+        {{ product.collections.first.title }}
+      </a>
+      <span>/</span>
+    {%- endif -%}
+    <span class="text-bark/70">{{ product.title }}</span>
+  </nav>
+
+  <div class="grid md:grid-cols-2 gap-12">
+    <div class="product-gallery">
+      <!-- Main image -->
+      <div class="rounded-2xl overflow-hidden bg-sand aspect-square mb-3" id="main-image-wrapper">
+        {%- if product.featured_image -%}
+          {{
+            product.featured_image
+            | image_url: width: 800
+            | image_tag:
+              id: 'main-product-image',
+              class: 'w-full h-full object-cover transition-opacity duration-300',
+              alt: product.featured_image.alt
+          }}
+        {%- else -%}
+          <div class="w-full h-full flex items-center justify-center text-8xl">🥭</div>
+        {%- endif -%}
+      </div>
+
+      <!-- Thumbnails -->
+      {%- if product.images.size > 1 -%}
+        <div class="flex gap-2 flex-wrap">
+          {%- for image in product.images limit: 5 -%}
+            <button
+              onclick="switchImage('{{ image | image_url: width: 800 }}', this)"
+              class="
+                product-thumb w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-200 cursor-pointer
+                {% if forloop.first %}border-mango{% else %}border-transparent hover:border-mango/50{% endif %}
+              "
+            >
+              {{
+                image
+                | image_url: width: 160
+                | image_tag: class: 'w-full h-full object-cover', alt: image.alt
+                | escape
+              }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      <!-- PRODUCT META -->
+      <div class="border-t border-bark/10 pt-4 space-y-2.5 mt-4">
+        {%- if product.metafields.custom.origin_region != blank -%}
+          <div class="flex items-center gap-2 text-xs text-bark/55">
+            <span>📍</span>
+            <span>Origin: {{ product.metafields.custom.origin_region }}</span>
+          </div>
+        {%- endif -%}
+        {%- if product.metafields.custom.ingredients != blank -%}
+          <div class="flex items-start gap-2 text-xs text-bark/55">
+            <span>📋</span>
+            <span>Ingredients: {{ product.metafields.custom.ingredients }}</span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- RIGHT: PRODUCT INFO -->
+    <div class="product-info">
+      <!-- Brand + wishlist -->
+      <div class="flex items-start justify-between mb-2">
+        <span class="text-[10px] font-medium uppercase tracking-wider text-bark/40">
+          {{ product.vendor }}
+        </span>
+        <button
+          class="wishlist-btn w-8 h-8 rounded-full border border-bark/15 flex items-center justify-center text-sm hover:border-mango hover:text-mango transition-colors cursor-pointer"
+          aria-label="Add to wishlist"
+        >
+          ♡
+        </button>
+      </div>
+
+      <!-- Title -->
+      <h1 class="font-display text-3xl font-bold text-bark leading-tight mb-3">
+        {{ product.title }}
+      </h1>
+
+      <!-- Product type badge -->
+      {%- if product.type != blank -%}
+        <div class="mb-4">
+          <span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-1 rounded-full">
+            {{ product.type }}
+          </span>
+        </div>
+      {%- endif -%}
+
+      <!-- Price -->
+      <div class="flex items-baseline gap-3 mb-5" id="product-price">
+        <span class="text-2xl font-medium text-mango-dark" id="price-display">
+          {{ product.selected_or_first_available_variant.price | money }}
+        </span>
+        {%- if product.compare_at_price > product.price -%}
+          <span class="text-base text-bark/40 line-through">
+            {{ product.compare_at_price | money }}
+          </span>
+          <span class="text-xs font-medium text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+            Save {{ product.compare_at_price | minus: product.price | money }}
+          </span>
+        {%- endif -%}
+      </div>
+
+      <!-- Description -->
+      <div class="text-sm text-bark/65 leading-relaxed mb-6 pb-6 border-b border-bark/10 prose prose-sm max-w-none">
+        {{ product.description }}
+      </div>
+
+      <!-- VARIANT SELECTORS -->
+      {%- unless product.has_only_default_variant -%}
+        <product-variants
+          data-product="{{ product.variants | json | escape }}"
+          data-currency="{{ cart.currency.iso_code }}"
+        >
+          {%- for option in product.options_with_values -%}
+            <div class="mb-5">
+              <div class="text-[10px] font-medium uppercase tracking-wider text-bark/50 mb-2">
+                {{ option.name }}:
+                <span
+                  class="text-bark normal-case tracking-normal font-normal ml-1"
+                  id="option-{{ forloop.index }}-label"
+                >
+                  {{ option.selected_value }}
+                </span>
+              </div>
+              <div class="flex gap-2 flex-wrap">
+                {%- for value in option.values -%}
+                  <button
+                    class="
+                      variant-btn px-4 py-1.5 rounded-lg border text-xs transition-all duration-200 cursor-pointer
+                      {% if option.selected_value == value %}
+                        border-cebu-green bg-cebu-green/5 text-cebu-green font-medium
+                      {% else %}
+                        border-bark/15 text-bark/70 hover:border-cebu-green hover:text-cebu-green
+                      {% endif %}
+                    "
+                    data-option-position="{{ forloop.parentloop.index }}"
+                    data-option-value="{{ value | escape }}"
+                  >
+                    {{ value }}
+                  </button>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+
+          <input type="hidden" id="selected-variant-id" value="{{ product.selected_or_first_available_variant.id }}">
+          <div id="variant-availability" class="text-xs mb-4"></div>
+        </product-variants>
+      {%- else -%}
+        <input type="hidden" id="selected-variant-id" value="{{ product.variants.first.id }}">
+      {%- endunless -%}
+
+      <!-- QUANTITY -->
+      <div class="flex items-center gap-4 mb-5">
+        <div class="text-[10px] font-medium uppercase tracking-wider text-bark/50">Quantity</div>
+        <div class="flex items-center border border-bark/15 rounded-xl overflow-hidden">
+          <button
+            id="qty-minus"
+            class="w-10 h-10 bg-sand text-bark flex items-center justify-center hover:bg-sand-dark transition-colors text-lg cursor-pointer"
+            aria-label="Decrease quantity"
+          >
+            −
+          </button>
+          <div
+            id="qty-display"
+            class="w-12 text-center text-sm font-medium text-bark"
+          >
+            1
+          </div>
+          <button
+            id="qty-plus"
+            class="w-10 h-10 bg-sand text-bark flex items-center justify-center hover:bg-sand-dark transition-colors text-lg cursor-pointer"
+            aria-label="Increase quantity"
+          >
+            +
+          </button>
+        </div>
+        <input type="hidden" id="product-qty" value="1">
+      </div>
+
+      <!-- ADD TO CART + BUY NOW -->
+      <div class="flex gap-3 mb-5">
+        <button
+          id="add-to-cart-btn"
+          class="flex-1 bg-cebu-green text-white font-medium text-sm py-3.5 rounded-xl hover:bg-cebu-green-dark transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          data-product-title="{{ product.title | escape }}"
+        >
+          <span id="atc-label">Add to Cart</span>
+        </button>
+        <button
+          id="buy-now-btn"
+          class="border border-cebu-green text-cebu-green font-medium text-sm px-6 py-3.5 rounded-xl hover:bg-cebu-green/5 transition-colors duration-200 cursor-pointer"
+        >
+          Buy Now
+        </button>
+      </div>
+
+      <!-- GIFT WRAPPING -->
+      {%- if section.settings.show_gift_option -%}
+        <div class="bg-cebu-green/8 border border-dashed border-cebu-green/40 rounded-xl p-4 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🎁</span>
+              <span class="text-sm font-medium text-cebu-green">Add Gift Wrapping</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="gift-toggle"
+                class="sr-only peer"
+              >
+              <div
+                class="
+                  w-9 h-5 bg-bark/20 rounded-full transition-colors peer-checked:bg-cebu-green
+                  after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                  after:bg-white after:rounded-full after:h-4 after:w-4
+                  after:transition-all peer-checked:after:translate-x-4
+                "
+              ></div>
+            </label>
+          </div>
+          <p class="text-xs text-cebu-green/65">
+            Include a personalized message card and premium kraft wrapping (+₱35)
+          </p>
+          <div id="gift-message-field" class="hidden mt-3">
+            <input
+              type="text"
+              id="gift-message-input"
+              placeholder="Your message e.g. Happy Birthday, Lolo! 🌴"
+              class="w-full border border-cebu-green/30 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-cebu-green"
+            >
+          </div>
+        </div>
+      {%- endif -%}
+
+      <!-- SHIPPING ESTIMATOR -->
+      {%- if section.settings.show_shipping_estimator -%}
+        <div class="border border-bark/10 rounded-xl p-4 mb-4">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-base">🚚</span>
+            <span class="text-sm font-medium text-bark">Estimate Shipping</span>
+          </div>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="zip-input"
+              placeholder="Enter ZIP code or city..."
+              class="flex-1 border border-bark/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-cebu-green bg-white"
+            >
+            <button
+              id="estimate-btn"
+              class="bg-cebu-green text-white text-xs px-4 py-2 rounded-lg hover:bg-cebu-green-dark transition-colors whitespace-nowrap cursor-pointer"
+            >
+              Estimate
+            </button>
+          </div>
+          <div id="shipping-result" class="hidden mt-2 text-xs text-cebu-green font-medium">
+            ✓ Estimated delivery: 3–5 business days · ₱100 standard
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'product-page.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Main Product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_gift_option",
+      "label": "Show gift wrapping option",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_estimator",
+      "label": "Show shipping estimator",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "Main Product" }]
+}
+{% endschema %}

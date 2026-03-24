@@ -1,0 +1,103 @@
+<div class="bg-sand py-12 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1">
+      {{ section.settings.label }}
+    </div>
+    <h2 class="font-display text-2xl font-bold text-bark mb-6">
+      {{ section.settings.title }}
+    </h2>
+
+    <div
+      class="grid grid-cols-2 md:grid-cols-4 gap-4"
+      id="related-products-grid"
+    >
+      {%- for i in (1..4) -%}
+        <div class="bg-white rounded-2xl overflow-hidden border border-bark/10 animate-pulse">
+          <div class="aspect-square bg-sand-dark"></div>
+          <div class="p-4">
+            <div class="h-3 bg-sand-dark rounded w-3/4 mb-2"></div>
+            <div class="h-3 bg-sand-dark rounded w-1/2"></div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const productId = {{ product.id }};
+    const grid = document.getElementById('related-products-grid');
+    if (!grid || !productId) return;
+
+    fetch(`/recommendations/products.json?product_id=${productId}&limit=4`)
+      .then(r => r.json())
+      .then(data => {
+        if (!data.products || data.products.length === 0) {
+          grid.closest('section, div.bg-sand')?.remove();
+          return;
+        }
+
+        grid.innerHTML = data.products.map(p => `
+          <div class="bg-white border border-bark/10 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 group">
+            <a href="${p.url}">
+              <div class="aspect-square bg-sand overflow-hidden">
+                ${p.featured_image
+                  ? `<img
+                      src="${p.featured_image}"
+                      alt="${p.title}"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy">`
+                  : '<div class="w-full h-full flex items-center justify-center text-5xl">🥭</div>'
+                }
+              </div>
+            </a>
+            <div class="p-4">
+              ${p.product_type
+                ? `<span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-0.5 rounded-full block w-fit mb-2">${p.product_type}</span>`
+                : ''
+              }
+              <a href="${p.url}" class="block text-sm font-medium text-bark mb-1 hover:text-cebu-green transition-colors">
+                ${p.title}
+              </a>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-sm font-medium text-mango-dark">
+                  ${(p.price / 100).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}
+                </span>
+                <button
+                  class="w-8 h-8 bg-cebu-green rounded-full text-white flex items-center justify-center hover:bg-cebu-green-dark transition-colors add-to-cart-btn"
+                  data-variant-id="${p.variants[0].id}"
+                  aria-label="Add ${p.title} to cart">
+                  <span class="text-lg leading-none">+</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      })
+      .catch(() => {
+        grid.closest('.bg-sand')?.remove();
+      });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Related Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Section label",
+      "default": "You May Also Like"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "More from our store"
+    }
+  ],
+  "presets": [{ "name": "Related Products" }]
+}
+{% endschema %}
