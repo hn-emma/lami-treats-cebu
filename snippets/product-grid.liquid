@@ -1,24 +1,19 @@
+{%- liquid
+  assign grid_products = products | default: collection.products
+  assign grid_columns = columns | default: '4'
+  assign grid_empty_url = empty_url | default: collection.url
+  assign grid_empty_label = empty_label | default: 'Clear Filters'
+  assign grid_empty_heading = empty_heading | default: 'No products found'
+  assign grid_empty_message = empty_message | default: 'Try adjusting or clearing your filters.'
+-%}
+
 <div id="product-grid">
-  {%- paginate collection.products by section.settings.products_per_page -%}
-    {%- if collection.products.size > 0 -%}
-      <div class="grid grid-cols-2 md:grid-cols-{{ section.settings.columns_desktop }} gap-4">
-        {%- for product in collection.products -%}
-          {% render 'product-card', product: product %}
-        {%- endfor -%}
-      </div>
-    {%- else -%}
-      <div class="text-center py-20">
-        <div class="text-5xl mb-4 opacity-30">🥭</div>
-        <h3 class="font-display text-lg font-bold text-bark mb-2">No products found</h3>
-        <p class="text-sm text-bark/50 mb-6">Try adjusting or clearing your filters.</p>
-        <a
-          href="{{ collection.url }}"
-          class="bg-cebu-green text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-cebu-green-dark transition-colors"
-        >
-          Clear Filters
-        </a>
-      </div>
-    {%- endif -%}
+  {%- if grid_products.size > 0 -%}
+    <div class="grid grid-cols-2 md:grid-cols-{{ grid_columns }} gap-4">
+      {%- for product in grid_products -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    </div>
 
     <!-- PAGINATION -->
     {%- if paginate.pages > 1 -%}
@@ -26,16 +21,24 @@
         {%- if paginate.previous -%}
           <a
             href="{{ paginate.previous.url }}"
-            class="w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+            class="
+              w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex
+              items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors
+            "
           >
             ‹
           </a>
         {%- endif -%}
+
         {%- for part in paginate.parts -%}
           {%- if part.is_link -%}
             <a
               href="{{ part.url }}"
-              class="w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:bg-cebu-green hover:text-white hover:border-cebu-green transition-colors"
+              class="
+                w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex item
+                s-center
+                            justify-center hover:bg-cebu-green hover:text-white hover:border-cebu-green transition-colors
+              "
             >
               {{ part.title }}
             </a>
@@ -51,15 +54,41 @@
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
+
         {%- if paginate.next -%}
           <a
             href="{{ paginate.next.url }}"
-            class="w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+            class="
+              w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex
+              items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors
+            "
           >
             ›
           </a>
         {%- endif -%}
       </div>
     {%- endif -%}
-  {%- endpaginate -%}
+
+  {%- else -%}
+    <div class="text-center py-20">
+      <div class="text-5xl mb-4 opacity-30">🥭</div>
+      <h3 class="font-display text-lg font-bold text-bark mb-2">
+        {{ grid_empty_heading }}
+      </h3>
+      <p class="text-sm text-bark/50 mb-6">
+        {{ grid_empty_message }}
+      </p>
+      {%- if grid_empty_url != blank -%}
+        <a
+          href="{{ grid_empty_url }}"
+          class="
+            bg-cebu-green text-white text-sm font-medium px-6 py-3 rounded-lg
+            hover:bg-cebu-green-dark transition-colors
+          "
+        >
+          {{ grid_empty_label }}
+        </a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 </div>

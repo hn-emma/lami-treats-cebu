@@ -1,0 +1,68 @@
+{%- if predictive_search.performed -%}
+  <div id="predictive-search-results" role="listbox">
+    {%- if predictive_search.resources.products.size > 0 -%}
+      <div class="p-2">
+        <div class="text-[10px] font-medium uppercase tracking-wider text-bark/40 px-3 py-2">Products</div>
+
+        <ul role="listbox" aria-label="Predictive search results">
+          {%- for product in predictive_search.resources.products -%}
+            <li role="option" aria-selected="false">
+              <a
+                href="{{ product.url }}"
+                class="predictive-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sand transition-colors cursor-pointer"
+                data-url="{{ product.url }}"
+                data-title="{{ product.title | escape }}"
+              >
+                <!-- Product image -->
+                <div class="w-10 h-10 rounded-lg bg-sand overflow-hidden flex-shrink-0">
+                  {%- if product.featured_image -%}
+                    {{
+                      product.featured_image
+                      | image_url: width: 80
+                      | image_tag: class: 'w-full h-full object-cover', alt: product.featured_image.alt, loading: 'lazy'
+                    }}
+                  {%- else -%}
+                    <div class="w-full h-full flex items-center justify-center text-lg">🥭</div>
+                  {%- endif -%}
+                </div>
+
+                <!-- Product info -->
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-bark truncate">
+                    {{ product.title }}
+                  </div>
+                  {%- if product.type != blank -%}
+                    <div class="text-xs text-bark/50">
+                      {{ product.type }}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                <!-- Price -->
+                <div class="text-xs font-medium text-mango-dark flex-shrink-0">
+                  {{ product.price | money }}
+                </div>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <!-- See all results link -->
+        <div class="border-t border-bark/10 mt-2 pt-2 px-3 pb-1">
+          <a
+            href="{{ routes.search_url }}?type=product&q={{ predictive_search.terms | url_encode }}"
+            class="text-xs text-cebu-green hover:text-cebu-green-dark font-medium transition-colors"
+          >
+            See all results for "{{ predictive_search.terms }}" →
+          </a>
+        </div>
+      </div>
+    {%- else -%}
+      <!-- No results state -->
+      <div class="p-4 text-center">
+        <div class="text-2xl mb-2 opacity-30">🔍</div>
+        <p class="text-xs text-bark/50">No results for "{{ predictive_search.terms }}"</p>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

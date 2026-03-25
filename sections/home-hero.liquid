@@ -17,12 +17,6 @@
         >
           {{ section.settings.primary_btn_label }}
         </a>
-        <a
-          href="{{ section.settings.secondary_btn_url }}"
-          class="border border-white/30 text-mango-light text-sm px-6 py-3 rounded-lg hover:bg-white/10 transition"
-        >
-          {{ section.settings.secondary_btn_label }}
-        </a>
       </div>
       <div class="flex gap-8 mt-8">
         <div>
@@ -82,9 +76,7 @@
     { "type": "image_picker", "id": "hero_image_2", "label": "Secondary hero image" },
     { "type": "image_picker", "id": "hero_image_3", "label": "Tertiary hero image" },
     { "type": "text", "id": "primary_btn_label", "label": "Primary button", "default": "Shop All Pasalubong" },
-    { "type": "url", "id": "primary_btn_url", "label": "Primary button URL", "default": "/collections/all" },
-    { "type": "text", "id": "secondary_btn_label", "label": "Secondary button", "default": "Build a Bundle 📦" },
-    { "type": "url", "id": "secondary_btn_url", "label": "Secondary button URL", "default": "/collections/all" }
+    { "type": "url", "id": "primary_btn_url", "label": "Primary button URL", "default": "/collections/all" }
   ],
   "presets": [{ "name": "Hero" }]
 }

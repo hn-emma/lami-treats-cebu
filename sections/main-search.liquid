@@ -1,0 +1,196 @@
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <!-- SEARCH HEADER -->
+  <div class="max-w-2xl mx-auto mb-10">
+    <h1 class="font-display text-3xl font-bold text-bark mb-6 text-center">
+      {%- if search.performed -%}
+        Search Results
+      {%- else -%}
+        Search Pasalubong
+      {%- endif -%}
+    </h1>
+
+    <!-- SEARCH BAR -->
+    <predictive-search data-predictive-search-url="{{ routes.predictive_search_url }}">
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="relative mb-5"
+      >
+        <input type="hidden" name="type" value="product">
+        <input type="hidden" name="options[prefix]" value="last">
+
+        <input
+          id="search-input"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder='Try "dried mango", "otap", "gift bundle"...'
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+          role="combobox"
+          aria-expanded="false"
+          aria-owns="predictive-search-results"
+          aria-controls="predictive-search-results"
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
+          class="w-full border border-bark/15 rounded-xl px-5 py-4 pr-14 text-sm text-bark bg-white outline-none focus:border-cebu-green transition-colors font-body"
+          aria-label="Search products"
+        >
+
+        <button
+          type="submit"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-cebu-green rounded-lg flex items-center justify-center text-white hover:bg-cebu-green-dark transition-colors"
+          aria-label="Submit search"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+        </button>
+
+        <!-- PREDICTIVE SEARCH RESULTS CONTAINER -->
+        <div
+          id="predictive-search"
+          class="absolute top-full left-0 right-0 mt-1 bg-white border border-bark/10 rounded-xl shadow-xl z-50 overflow-hidden"
+          tabindex="-1"
+          style="display: none;"
+        ></div>
+      </form>
+    </predictive-search>
+
+    <!-- POPULAR SEARCH TAGS -->
+    {%- if search.performed == false or search.results_count == 0 -%}
+      <div class="flex items-center gap-2 flex-wrap justify-center">
+        <span class="text-xs text-bark/40">Popular:</span>
+        {%- assign popular = section.settings.popular_searches | split: ',' -%}
+        {%- for term in popular -%}
+          <a
+            href="{{ routes.search_url }}?type=product&q={{ term | strip | url_encode }}"
+            class="text-xs px-3 py-1.5 border border-bark/10 rounded-full bg-white hover:border-mango hover:text-mango-dark transition-colors"
+          >
+            {{ term | strip }}
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  {%- if search.performed -%}
+    {%- if search.results_count > 0 -%}
+      <!-- RESULTS META -->
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+        <p class="text-sm text-bark/60">
+          Showing
+          <strong class="text-bark">{{ search.results_count }}</strong>
+          {{ search.results_count | pluralize: 'result', 'results' }}
+          for
+          <strong class="text-bark">"{{ search.terms | escape }}"</strong>
+        </p>
+        <a
+          href="{{ routes.search_url }}"
+          class="text-xs text-bark/40 hover:text-bark transition-colors"
+        >
+          Clear search
+        </a>
+      </div>
+
+      <!-- RESULTS GRID -->
+      {%- paginate search.results by section.settings.results_per_page -%}
+        {%- assign search_products = search.results | where: 'object_type', 'product' -%}
+        {% render 'product-grid',
+          products: search_products,
+          columns: '4',
+          empty_heading: 'No products found',
+          empty_message: 'Try a different search term.',
+          empty_url: '/collections/all',
+          empty_label: 'Browse All Products'
+        %}
+      {%- endpaginate -%}
+
+    {%- else -%}
+      <!-- NO RESULTS STATE -->
+      <div class="text-center py-16 max-w-sm mx-auto">
+        <div class="text-6xl mb-5 opacity-25">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+        </div>
+        <h2 class="font-display text-xl font-bold text-bark mb-3">No results for "{{ search.terms | escape }}"</h2>
+        <p class="text-sm text-bark/55 mb-6 leading-relaxed">
+          Try a different keyword, check the spelling, or browse all our pasalubong below.
+        </p>
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="inline-block bg-cebu-green text-white text-sm font-medium px-6 py-3 rounded-xl hover:bg-cebu-green-dark transition-colors"
+        >
+          Browse All Products
+        </a>
+      </div>
+
+      <!-- SUGGESTIONS when no results -->
+      <div class="mt-12">
+        <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1 text-center">Suggestions</div>
+        <h3 class="font-display text-xl font-bold text-bark mb-6 text-center">Popular Right Now</h3>
+        <div
+          id="suggestion-grid"
+          class="grid grid-cols-2 md:grid-cols-4 gap-4"
+        ></div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <!-- DEFAULT STATE — no search performed yet -->
+  {%- unless search.performed -%}
+    <div class="mt-4">
+      <div class="text-[10px] font-medium uppercase tracking-widest text-mango mb-1 text-center">Featured</div>
+      <h3 class="font-display text-xl font-bold text-bark mb-6 text-center">Our Best Sellers</h3>
+      <div
+        id="suggestion-grid"
+        class="grid grid-cols-2 md:grid-cols-4 gap-4"
+      ></div>
+    </div>
+  {%- endunless -%}
+</div>
+
+<script src="{{ 'search-page.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Main Search",
+  "settings": [
+    {
+      "type": "text",
+      "id": "popular_searches",
+      "label": "Popular searches (comma separated)",
+      "default": "Dried Mangoes, Otap, Gift Bundle, Tablea, Chicharon"
+    },
+    {
+      "type": "range",
+      "id": "results_per_page",
+      "label": "Results per page",
+      "min": 8,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    }
+  ],
+  "presets": [{ "name": "Main Search" }]
+}
+{% endschema %}
