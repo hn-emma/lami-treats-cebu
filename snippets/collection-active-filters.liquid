@@ -24,7 +24,7 @@
               <button
                 data-url="{{ filter_value.url_to_remove }}"
                 onclick="filterFetch(this.dataset.url)"
-                class="inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green text-xs font-medium px-3 py-1 rounded-full hover:bg-cebu-green/20 transition-colors"
+                class="inline-flex items-center gap-1.5 bg-custom-green/10 text-custom-green text-xs font-medium px-3 py-1 rounded-full hover:bg-custom-green/20 transition-colors"
               >
                 {{ filter_value.label }}
                 <span class="leading-none">✕</span>
@@ -36,7 +36,7 @@
               <button
                 data-url="{{ filter.url_to_remove }}"
                 onclick="filterFetch(this.dataset.url)"
-                class="inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green text-xs font-medium px-3 py-1 rounded-full hover:bg-cebu-green/20 transition-colors"
+                class="inline-flex items-center gap-1.5 bg-custom-green/10 text-custom-green text-xs font-medium px-3 py-1 rounded-full hover:bg-custom-green/20 transition-colors"
               >
                 ₱{{ filter.min_value.value | default: 0 | divided_by: 100 | ceil }} — ₱
                 {{- filter.max_value.value | default: filter.range_max | divided_by: 100 | ceil }}

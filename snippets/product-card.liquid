@@ -17,7 +17,7 @@
   <div class="p-4">
     <div class="flex items-center justify-between mb-2">
       {%- if product.type != blank -%}
-        <span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-0.5 rounded-full">
+        <span class="bg-custom-green/10 text-custom-green text-[10px] font-medium px-2.5 py-0.5 rounded-full">
           {{ product.type }}
         </span>
       {%- endif -%}
@@ -30,7 +30,7 @@
     </div>
     <a
       href="{{ product.url }}"
-      class="block text-sm font-medium text-bark mb-1 hover:text-cebu-green transition-colors"
+      class="block text-sm font-medium text-bark mb-1 hover:text-custom-green transition-colors"
     >
       {{ product.title }}
     </a>
@@ -49,7 +49,7 @@
         {%- endif -%}
       </div>
       <button
-        class="w-8 h-8 bg-cebu-green rounded-full text-white flex items-center justify-center hover:bg-cebu-green-dark transition-colors duration-200 add-to-cart-btn cursor-pointer"
+        class="w-8 h-8 bg-custom-green rounded-full text-white flex items-center justify-center hover:bg-custom-green-dark transition-colors duration-200 add-to-cart-btn cursor-pointer"
         data-variant-id="{{ product.variants.first.id }}"
         aria-label="Add {{ product.title }} to cart"
       >

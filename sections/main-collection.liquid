@@ -11,7 +11,7 @@
               {%- for value in filter.active_values -%}
                 <button
                   data-remove-url="{{ value.url_to_remove }}"
-                  class="filter-remove-btn inline-flex items-center gap-1.5 bg-cebu-green/10 text-cebu-green px-3 py-1 rounded-full text-xs border border-cebu-green/20 hover:bg-cebu-green/20 transition-colors cursor-pointer"
+                  class="filter-remove-btn inline-flex items-center gap-1.5 bg-custom-green/10 text-custom-green px-3 py-1 rounded-full text-xs border border-custom-green/20 hover:bg-custom-green/20 transition-colors cursor-pointer"
                 >
                   {{ value.label }} ✕
                 </button>
@@ -34,8 +34,8 @@
               data-url="{{ collection.url }}"
               class="
                 type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
-                {% if has_active_type == false %}bg-cebu-green text-white border-cebu-green
-                {% else %}bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green{% endif %}
+                {% if has_active_type == false %}bg-custom-green text-white border-custom-green
+                {% else %}bg-white text-bark/60 border-bark/15 hover:border-custom-green hover:text-custom-green{% endif %}
               "
             >
               All
@@ -46,9 +46,9 @@
                 data-url="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
                 class="
                   type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
-                  {% if value.active %}bg-cebu-green text-white border-cebu-green
+                  {% if value.active %}bg-custom-green text-white border-custom-green
                   {% elsif value.count == 0 %}bg-white text-bark/30 border-bark/10 opacity-50 cursor-not-allowed
-                  {% else %}bg-white text-bark/60 border-bark/15 hover:border-cebu-green hover:text-cebu-green{% endif %}
+                  {% else %}bg-white text-bark/60 border-bark/15 hover:border-custom-green hover:text-custom-green{% endif %}
                 "
                 {% if value.count == 0 and value.active == false %}
                   disabled
@@ -80,7 +80,7 @@
               <p class="text-sm text-bark/50 mb-6">Try clearing your filters.</p>
               <button
                 data-url="{{ collection.url }}"
-                class="filter-clear-btn bg-cebu-green text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-cebu-green-dark transition-colors cursor-pointer"
+                class="filter-clear-btn bg-custom-green text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-custom-green-dark transition-colors cursor-pointer"
               >
                 Clear Filters
               </button>
@@ -93,7 +93,7 @@
             {%- if paginate.previous -%}
               <a
                 href="{{ paginate.previous.url }}"
-                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-custom-green hover:text-custom-green transition-colors"
               >
                 ‹
               </a>
@@ -102,13 +102,13 @@
               {%- if part.is_link -%}
                 <a
                   href="{{ part.url }}"
-                  class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:bg-cebu-green hover:text-white hover:border-cebu-green transition-colors"
+                  class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:bg-custom-green hover:text-white hover:border-custom-green transition-colors"
                 >
                   {{ part.title }}
                 </a>
               {%- else -%}
                 {%- if part.title == paginate.current_page -%}
-                  <span class="w-9 h-9 rounded-lg bg-cebu-green text-white text-sm flex items-center justify-center">
+                  <span class="w-9 h-9 rounded-lg bg-custom-green text-white text-sm flex items-center justify-center">
                     {{ part.title }}
                   </span>
                 {%- else -%}
@@ -121,7 +121,7 @@
             {%- if paginate.next -%}
               <a
                 href="{{ paginate.next.url }}"
-                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-cebu-green hover:text-cebu-green transition-colors"
+                class="pagination-link w-9 h-9 rounded-lg border border-bark/15 bg-white text-sm flex items-center justify-center hover:border-custom-green hover:text-custom-green transition-colors"
               >
                 ›
               </a>

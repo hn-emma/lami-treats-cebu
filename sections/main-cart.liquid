@@ -1,0 +1,307 @@
+<div class="max-w-5xl mx-auto px-6 py-10">
+  <h1 class="font-display text-3xl font-bold text-bark mb-8">
+    Your Cart
+    {%- if cart.item_count > 0 -%}
+      <span class="text-lg font-normal text-bark/40 ml-2">
+        ({{ cart.item_count }}
+        {{ cart.item_count | pluralize: 'item', 'items' }})
+      </span>
+    {%- endif -%}
+  </h1>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="grid md:grid-cols-3 gap-8 items-start">
+      <!-- CART ITEMS -->
+      <div class="md:col-span-2">
+        <cart-items>
+          <div class="bg-white rounded-2xl border border-bark/10 overflow-hidden">
+            <!-- Table header -->
+            <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-bark/10 text-[10px] font-medium uppercase tracking-wider text-bark/40">
+              <div class="col-span-6">Product</div>
+              <div class="col-span-2 text-center">Price</div>
+              <div class="col-span-2 text-center">Qty</div>
+              <div class="col-span-2 text-right">Total</div>
+            </div>
+
+            <!-- Cart items -->
+            <div id="cart-items-container">
+              {%- for item in cart.items -%}
+                <div
+                  class="cart-item grid grid-cols-12 gap-4 items-center px-6 py-5 border-b border-bark/10 last:border-0"
+                  id="cart-item-{{ item.key }}"
+                >
+                  <!-- Product -->
+                  <div class="col-span-12 md:col-span-6 flex gap-4 items-center">
+                    <a
+                      href="{{ item.url }}"
+                      class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block"
+                    >
+                      {%- if item.image -%}
+                        {{
+                          item.image
+                          | image_url: width: 160
+                          | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
+                        }}
+                      {%- else -%}
+                        <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
+                      {%- endif -%}
+                    </a>
+                    <div class="flex-1 min-w-0">
+                      <a
+                        href="{{ item.url }}"
+                        class="block text-sm font-medium text-bark hover:text-custom-green transition-colors truncate"
+                      >
+                        {{ item.product.title }}
+                      </a>
+                      {%- unless item.product.has_only_default_variant -%}
+                        <div class="text-xs text-bark/50 mt-0.5">
+                          {{ item.variant.title }}
+                        </div>
+                      {%- endunless -%}
+                      {%- if item.properties.size > 0 -%}
+                        <div class="mt-1 space-y-0.5">
+                          {%- for property in item.properties -%}
+                            {%- unless property.last == blank -%}
+                              <div class="text-[10px] text-bark/50">{{ property.first }}: {{ property.last }}</div>
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        </div>
+                      {%- endif -%}
+                      <button
+                        class="cart-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer"
+                        data-item-key="{{ item.key }}"
+                        aria-label="Remove {{ item.product.title }}"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="col-span-4 md:col-span-2 text-sm text-bark/70 md:text-center">
+                    <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Price</span>
+                    {{ item.price | money }}
+                  </div>
+
+                  <!-- Quantity -->
+                  <div class="col-span-4 md:col-span-2 flex items-center md:justify-center">
+                    <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
+                      <button
+                        class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
+                        data-item-key="{{ item.key }}"
+                        data-action="decrease"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span class="w-8 text-center text-sm font-medium text-bark cart-qty-value">
+                        {{ item.quantity }}
+                      </span>
+                      <button
+                        class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
+                        data-item-key="{{ item.key }}"
+                        data-action="increase"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Line total -->
+                  <div class="col-span-4 md:col-span-2 text-sm font-medium text-mango-dark md:text-right">
+                    <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Total</span>
+                    {{ item.line_price | money }}
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        </cart-items>
+
+        <!-- ORDER NOTE -->
+        <div class="mt-4">
+          <label
+            for="cart-note"
+            class="block text-xs font-medium text-bark/60 mb-2"
+          >
+            Order note (optional)
+          </label>
+          <textarea
+            id="cart-note"
+            name="note"
+            rows="3"
+            placeholder="Special instructions, delivery notes..."
+            class="w-full border border-bark/10 rounded-xl px-4 py-3 text-xs text-bark bg-white outline-none focus:border-custom-green transition-colors resize-none font-body"
+          >{{ cart.note }}</textarea>
+        </div>
+
+        <!-- CONTINUE SHOPPING -->
+        <div class="mt-4">
+          <a
+            href="{{ routes.all_products_collection_url }}"
+            class="text-xs text-custom-green hover:text-custom-green-dark font-medium transition-colors"
+          >
+            ← Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- ORDER SUMMARY SIDEBAR -->
+      <div class="space-y-4">
+        <!-- FREE SHIPPING PROGRESS -->
+        {%- assign free_ship_threshold = section.settings.free_shipping_threshold | times: 100 -%}
+        {%- assign remaining = free_ship_threshold | minus: cart.total_price -%}
+        <div class="bg-custom-green/8 border border-custom-green/20 rounded-xl p-4">
+          {%- if remaining > 0 -%}
+            <div class="text-xs text-custom-green mb-2 font-medium">
+              🚚 Add <strong>{{ remaining | money }}</strong> more for free shipping!
+            </div>
+            <div class="bg-custom-green/15 rounded-full h-2 overflow-hidden">
+              <div
+                class="bg-custom-green h-full rounded-full transition-all duration-500"
+                style="width: {{ cart.total_price | times: 100 | divided_by: free_ship_threshold | at_most: 100 }}%"
+              ></div>
+            </div>
+          {%- else -%}
+            <div class="text-xs text-custom-green font-medium">🎉 You qualify for free shipping!</div>
+          {%- endif -%}
+        </div>
+
+        <!-- GIFT WRAPPING -->
+        <div class="bg-white border border-bark/10 rounded-xl p-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm font-medium text-bark">🎁 Gift Wrapping</div>
+              <div class="text-xs text-bark/50 mt-0.5">Premium kraft wrap + message card (+₱35)</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="cart-gift-toggle"
+                class="sr-only peer"
+                {% if cart.attributes.gift_wrapping == 'true' %}
+                  checked
+                {% endif %}
+              >
+              <div
+                class="
+                  w-9 h-5 bg-bark/20 rounded-full transition-colors peer-checked:bg-custom-green
+                  after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                  after:bg-white after:rounded-full after:h-4 after:w-4
+                  after:transition-all peer-checked:after:translate-x-4
+                "
+              ></div>
+            </label>
+          </div>
+          <div
+            id="gift-message-wrap"
+            class="{% unless cart.attributes.gift_wrapping == 'true' %}hidden{% endunless %} mt-3"
+          >
+            <input
+              type="text"
+              id="cart-gift-message"
+              placeholder="Your message e.g. Happy Birthday! 🌴"
+              value="{{ cart.attributes.gift_message | escape }}"
+              class="w-full border border-bark/10 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-custom-green transition-colors"
+            >
+          </div>
+        </div>
+
+        <!-- ORDER SUMMARY -->
+        <div class="bg-white border border-bark/10 rounded-xl p-5">
+          <div class="text-sm font-medium text-bark mb-4">Order Summary</div>
+
+          <div class="space-y-2.5 text-sm mb-4">
+            <div class="flex justify-between text-bark/60">
+              <span>Subtotal</span>
+              <span id="cart-subtotal">{{ cart.total_price | money }}</span>
+            </div>
+            <div class="flex justify-between text-bark/60">
+              <span>Shipping</span>
+              <span class="text-custom-green text-xs font-medium">Calculated at checkout</span>
+            </div>
+            {%- if cart.total_discount > 0 -%}
+              <div class="flex justify-between text-red-500">
+                <span>Discounts</span>
+                <span>−{{ cart.total_discount | money }}</span>
+              </div>
+            {%- endif -%}
+            <div class="border-t border-bark/10 pt-3 flex justify-between font-medium text-bark">
+              <span>Estimated Total</span>
+              <span class="text-mango-dark text-base" id="cart-total">
+                {{ cart.total_price | money }}
+              </span>
+            </div>
+          </div>
+
+          <!-- PROMO CODE -->
+          <div class="flex gap-2 mb-4">
+            <input
+              type="text"
+              id="promo-code-input"
+              placeholder="Promo code"
+              class="flex-1 border border-bark/10 rounded-lg px-3 py-2 text-xs bg-sand outline-none focus:border-custom-green transition-colors"
+            >
+            <button
+              id="promo-apply-btn"
+              class="border border-custom-green text-custom-green text-xs font-medium px-3 py-2 rounded-lg hover:bg-custom-green/5 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              Apply
+            </button>
+          </div>
+
+          <!-- CHECKOUT BUTTON -->
+          <a
+            href="/checkout"
+            class="block w-full bg-custom-green text-white text-center font-medium text-sm py-3.5 rounded-xl hover:bg-custom-green-dark transition-colors"
+          >
+            Proceed to Checkout →
+          </a>
+          <div class="text-center text-xs text-bark/40 mt-3">🔒 Secure checkout · COD available</div>
+        </div>
+
+        <!-- PAYMENT ICONS -->
+        <div class="flex flex-wrap items-center justify-center gap-2">
+          {%- assign payment_methods = 'Visa,Mastercard,GCash,Maya,COD' | split: ',' -%}
+          {%- for method in payment_methods -%}
+            <span class="bg-white border border-bark/10 text-bark/50 text-[10px] font-medium px-2.5 py-1 rounded">
+              {{ method }}
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+  {%- else -%}
+    <!-- EMPTY CART STATE -->
+    <div class="text-center py-20 max-w-sm mx-auto">
+      <div class="text-6xl mb-5 opacity-20">🛒</div>
+      <h2 class="font-display text-xl font-bold text-bark mb-3">Your cart is empty</h2>
+      <p class="text-sm text-bark/55 mb-6 leading-relaxed">Looks like you haven't added any pasalubong yet!</p>
+      <a
+        href="{{ routes.all_products_collection_url }}"
+        class="inline-block bg-custom-green text-white text-sm font-medium px-6 py-3 rounded-xl hover:bg-custom-green-dark transition-colors"
+      >
+        Start Shopping
+      </a>
+    </div>
+  {%- endif -%}
+</div>
+
+<script src="{{ 'cart.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Main Cart",
+  "settings": [
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping threshold (₱)",
+      "default": 1500
+    }
+  ],
+  "presets": [{ "name": "Main Cart" }]
+}
+{% endschema %}

@@ -54,10 +54,10 @@
             </a>
             <div class="p-4">
               ${p.product_type
-                ? `<span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-0.5 rounded-full block w-fit mb-2">${p.product_type}</span>`
+                ? `<span class="bg-custom-green/10 text-custom-green text-[10px] font-medium px-2.5 py-0.5 rounded-full block w-fit mb-2">${p.product_type}</span>`
                 : ''
               }
-              <a href="${p.url}" class="block text-sm font-medium text-bark mb-1 hover:text-cebu-green transition-colors">
+              <a href="${p.url}" class="block text-sm font-medium text-bark mb-1 hover:text-custom-green transition-colors">
                 ${p.title}
               </a>
               <div class="flex items-center justify-between mt-3">
@@ -65,7 +65,7 @@
                   ${(p.price / 100).toLocaleString('en-PH', { style: 'currency', currency: 'PHP' })}
                 </span>
                 <button
-                  class="w-8 h-8 bg-cebu-green rounded-full text-white flex items-center justify-center hover:bg-cebu-green-dark transition-colors add-to-cart-btn"
+                  class="w-8 h-8 bg-custom-green rounded-full text-white flex items-center justify-center hover:bg-custom-green-dark transition-colors add-to-cart-btn"
                   data-variant-id="${p.variants[0].id}"
                   aria-label="Add ${p.title} to cart">
                   <span class="text-lg leading-none">+</span>

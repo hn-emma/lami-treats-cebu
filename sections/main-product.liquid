@@ -73,19 +73,6 @@
 
     <!-- RIGHT: PRODUCT INFO -->
     <div class="product-info">
-      <!-- Brand + wishlist -->
-      <div class="flex items-start justify-between mb-2">
-        <span class="text-[10px] font-medium uppercase tracking-wider text-bark/40">
-          {{ product.vendor }}
-        </span>
-        <button
-          class="wishlist-btn w-8 h-8 rounded-full border border-bark/15 flex items-center justify-center text-sm hover:border-mango hover:text-mango transition-colors cursor-pointer"
-          aria-label="Add to wishlist"
-        >
-          ♡
-        </button>
-      </div>
-
       <!-- Title -->
       <h1 class="font-display text-3xl font-bold text-bark leading-tight mb-3">
         {{ product.title }}
@@ -94,7 +81,7 @@
       <!-- Product type badge -->
       {%- if product.type != blank -%}
         <div class="mb-4">
-          <span class="bg-cebu-green/10 text-cebu-green text-[10px] font-medium px-2.5 py-1 rounded-full">
+          <span class="bg-custom-green/10 text-custom-green text-[10px] font-medium px-2.5 py-1 rounded-full">
             {{ product.type }}
           </span>
         </div>
@@ -143,9 +130,9 @@
                     class="
                       variant-btn px-4 py-1.5 rounded-lg border text-xs transition-all duration-200 cursor-pointer
                       {% if option.selected_value == value %}
-                        border-cebu-green bg-cebu-green/5 text-cebu-green font-medium
+                        border-custom-green bg-custom-green/5 text-custom-green font-medium
                       {% else %}
-                        border-bark/15 text-bark/70 hover:border-cebu-green hover:text-cebu-green
+                        border-bark/15 text-bark/70 hover:border-custom-green hover:text-custom-green
                       {% endif %}
                     "
                     data-option-position="{{ forloop.parentloop.index }}"
@@ -197,14 +184,15 @@
       <div class="flex gap-3 mb-5">
         <button
           id="add-to-cart-btn"
-          class="flex-1 bg-cebu-green text-white font-medium text-sm py-3.5 rounded-xl hover:bg-cebu-green-dark transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          class="flex-1 bg-custom-green text-white font-medium text-sm py-3.5 rounded-xl hover:bg-custom-green-dark transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           data-product-title="{{ product.title | escape }}"
         >
           <span id="atc-label">Add to Cart</span>
         </button>
         <button
           id="buy-now-btn"
-          class="border border-cebu-green text-cebu-green font-medium text-sm px-6 py-3.5 rounded-xl hover:bg-cebu-green/5 transition-colors duration-200 cursor-pointer"
+          data-action="buy-now"
+          class="border border-custom-green text-custom-green font-medium text-sm px-6 py-3.5 rounded-xl hover:bg-custom-green/5 transition-colors duration-200 cursor-pointer"
         >
           Buy Now
         </button>
@@ -212,11 +200,11 @@
 
       <!-- GIFT WRAPPING -->
       {%- if section.settings.show_gift_option -%}
-        <div class="bg-cebu-green/8 border border-dashed border-cebu-green/40 rounded-xl p-4 mb-4">
+        <div class="bg-custom-green/8 border border-dashed border-custom-green/40 rounded-xl p-4 mb-4">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <span class="text-base">🎁</span>
-              <span class="text-sm font-medium text-cebu-green">Add Gift Wrapping</span>
+              <span class="text-sm font-medium text-custom-green">Add Gift Wrapping</span>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input
@@ -226,7 +214,7 @@
               >
               <div
                 class="
-                  w-9 h-5 bg-bark/20 rounded-full transition-colors peer-checked:bg-cebu-green
+                  w-9 h-5 bg-bark/20 rounded-full transition-colors peer-checked:bg-custom-green
                   after:content-[''] after:absolute after:top-0.5 after:left-0.5
                   after:bg-white after:rounded-full after:h-4 after:w-4
                   after:transition-all peer-checked:after:translate-x-4
@@ -234,7 +222,7 @@
               ></div>
             </label>
           </div>
-          <p class="text-xs text-cebu-green/65">
+          <p class="text-xs text-custom-green/65">
             Include a personalized message card and premium kraft wrapping (+₱35)
           </p>
           <div id="gift-message-field" class="hidden mt-3">
@@ -242,7 +230,7 @@
               type="text"
               id="gift-message-input"
               placeholder="Your message e.g. Happy Birthday, Lolo! 🌴"
-              class="w-full border border-cebu-green/30 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-cebu-green"
+              class="w-full border border-custom-green/30 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-custom-green"
             >
           </div>
         </div>
@@ -260,16 +248,16 @@
               type="text"
               id="zip-input"
               placeholder="Enter ZIP code or city..."
-              class="flex-1 border border-bark/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-cebu-green bg-white"
+              class="flex-1 border border-bark/10 rounded-lg px-3 py-2 text-xs outline-none focus:border-custom-green bg-white"
             >
             <button
               id="estimate-btn"
-              class="bg-cebu-green text-white text-xs px-4 py-2 rounded-lg hover:bg-cebu-green-dark transition-colors whitespace-nowrap cursor-pointer"
+              class="bg-custom-green text-white text-xs px-4 py-2 rounded-lg hover:bg-custom-green-dark transition-colors whitespace-nowrap cursor-pointer"
             >
               Estimate
             </button>
           </div>
-          <div id="shipping-result" class="hidden mt-2 text-xs text-cebu-green font-medium">
+          <div id="shipping-result" class="hidden mt-2 text-xs text-custom-green font-medium">
             ✓ Estimated delivery: 3–5 business days · ₱100 standard
           </div>
         </div>

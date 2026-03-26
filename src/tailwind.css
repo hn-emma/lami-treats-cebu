@@ -2,8 +2,8 @@
 @plugin "@tailwindcss/forms";
 
 @theme {
-  --color-cebu-green: #1A6B3C;
-  --color-cebu-green-dark: #0D4526;
+  --color-custom-green: #1A6B3C;
+  --color-custom-green-dark: #0D4526;
   --color-mango: #E8800A;
   --color-mango-light: #FDF0DC;
   --color-mango-dark: #A85C00;

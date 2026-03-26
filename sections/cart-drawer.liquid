@@ -1,0 +1,188 @@
+<div class="cart-drawer-inner flex flex-col h-full">
+  <!-- HEADER -->
+  <div class="flex items-center justify-between px-5 py-4 border-b border-bark/10 flex-shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="font-display text-lg font-bold text-bark">Your Cart</span>
+      <span
+        class="bg-custom-green text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center"
+        id="drawer-item-count"
+      >
+        {{ cart.item_count }}
+      </span>
+    </div>
+    <button
+      class="cart-drawer-close w-8 h-8 rounded-full border border-bark/10 flex items-center justify-center text-sm text-bark hover:bg-sand transition-colors cursor-pointer"
+      aria-label="Close cart"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- FREE SHIPPING BAR -->
+  {%- assign free_ship_cents = 150000 -%}
+  {%- assign remaining_cents = free_ship_cents | minus: cart.total_price -%}
+  <div class="px-5 py-3 bg-custom-green/8 border-b border-custom-green/15 flex-shrink-0">
+    {%- if remaining_cents > 0 -%}
+      <div class="text-xs text-custom-green mb-1.5 font-medium">
+        🚚 Add <strong>{{ remaining_cents | money }}</strong> more for free shipping!
+      </div>
+      <div class="bg-custom-green/15 rounded-full h-1.5 overflow-hidden">
+        <div
+          class="bg-custom-green h-full rounded-full transition-all duration-500"
+          style="width: {{ cart.total_price | times: 100 | divided_by: free_ship_cents | at_most: 100 }}%"
+        ></div>
+      </div>
+    {%- else -%}
+      <div class="text-xs text-custom-green font-medium">🎉 You qualify for free shipping!</div>
+    {%- endif -%}
+  </div>
+
+  <!-- CART ITEMS -->
+  <div class="flex-1 overflow-y-auto px-5 py-4">
+    {%- if cart.item_count > 0 -%}
+      <div class="space-y-0 divide-y divide-bark/8">
+        {%- for item in cart.items -%}
+          <div
+            class="cart-drawer-item flex gap-3 py-4"
+            id="drawer-item-{{ item.key }}"
+          >
+            <!-- Image -->
+            <a href="{{ item.url }}" class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block">
+              {%- if item.image -%}
+                {{
+                  item.image
+                  | image_url: width: 160
+                  | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
+              {%- endif -%}
+            </a>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <a
+                href="{{ item.url }}"
+                class="block text-sm font-medium text-bark hover:text-custom-green transition-colors leading-tight mb-0.5 truncate"
+              >
+                {{ item.product.title }}
+              </a>
+              {%- unless item.product.has_only_default_variant -%}
+                <div class="text-xs text-bark/50 mb-1">{{ item.variant.title }}</div>
+              {%- endunless -%}
+              {%- if item.properties.size > 0 -%}
+                <div class="mb-1">
+                  {%- for property in item.properties -%}
+                    {%- unless property.last == blank -%}
+                      <div class="text-[10px] text-bark/45">{{ property.first }}: {{ property.last }}</div>
+                    {%- endunless -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              <!-- Price + Qty controls -->
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
+                  <button
+                    class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
+                    data-item-key="{{ item.key }}"
+                    data-action="decrease"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span class="w-7 text-center text-xs font-medium text-bark drawer-qty-value">
+                    {{ item.quantity }}
+                  </span>
+                  <button
+                    class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
+                    data-item-key="{{ item.key }}"
+                    data-action="increase"
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+                <span class="text-sm font-medium text-mango-dark">
+                  {{ item.line_price | money }}
+                </span>
+              </div>
+
+              <!-- Remove -->
+              <button
+                class="drawer-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer block"
+                data-item-key="{{ item.key }}"
+                aria-label="Remove {{ item.product.title }}"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      <div class="text-center py-16">
+        <div class="text-4xl mb-3 opacity-25">🛒</div>
+        <p class="text-sm text-bark/50">Your cart is empty</p>
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="inline-block mt-4 text-xs text-custom-green font-medium hover:underline"
+        >
+          Start Shopping
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+
+  <!-- FOOTER -->
+  {%- if cart.item_count > 0 -%}
+    <div class="flex-shrink-0 border-t border-bark/10 px-5 py-4 bg-sand space-y-3">
+      <!-- Gift toggle -->
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium text-bark">🎁 Gift Wrapping</div>
+          <div class="text-[10px] text-bark/50">+₱35 — kraft wrap & card</div>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            class="sr-only peer drawer-gift-toggle"
+            {% if cart.attributes.gift_wrapping == 'true' %}
+              checked
+            {% endif %}
+          >
+          <div
+            class="
+              w-8 h-4 bg-bark/20 rounded-full transition-colors peer-checked:bg-custom-green
+              after:content-[''] after:absolute after:top-0.5 after:left-0.5
+              after:bg-white after:rounded-full after:h-3 after:w-3
+              after:transition-all peer-checked:after:translate-x-4
+            "
+          ></div>
+        </label>
+      </div>
+
+      <!-- Totals -->
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-bark/60">Subtotal</span>
+        <span class="font-medium text-bark" id="drawer-subtotal">
+          {{ cart.total_price | money }}
+        </span>
+      </div>
+
+      <!-- Buttons -->
+      <a
+        href="/checkout"
+        class="block w-full bg-custom-green text-white text-center font-medium text-sm py-3 rounded-xl hover:bg-custom-green-dark transition-colors"
+      >
+        Checkout → {{ cart.total_price | money }}
+      </a>
+      <a
+        href="{{ routes.cart_url }}"
+        class="block w-full border border-custom-green text-custom-green text-center text-sm py-2.5 rounded-xl hover:bg-custom-green/5 transition-colors"
+      >
+        View Cart
+      </a>
+    </div>
+  {%- endif -%}
+</div>

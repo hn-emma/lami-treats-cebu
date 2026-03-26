@@ -1,0 +1,78 @@
+{%- if cart.item_count > 0 -%}
+  {%- assign last_item = cart.items.first -%}
+
+  <div class="cart-notification-inner">
+    <div class="flex items-center justify-between px-5 py-3.5 border-b border-bark/10">
+      <div class="flex items-center gap-2">
+        <span class="text-base">✓</span>
+        <span class="text-sm font-medium text-bark">Added to cart</span>
+      </div>
+      <button
+        class="cart-notification-close w-7 h-7 rounded-full border border-bark/10 flex items-center justify-center text-xs text-bark hover:bg-sand transition-colors cursor-pointer"
+        aria-label="Close notification"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Product details -->
+    <div class="px-5 py-4 flex gap-4 items-center">
+      <!-- Thumbnail -->
+      <a
+        href="{{ last_item.url }}"
+        class="w-20 h-20 rounded-xl overflow-hidden bg-sand flex-shrink-0 block border border-bark/8"
+      >
+        {%- if last_item.image -%}
+          {{
+            last_item.image
+            | image_url: width: 160
+            | image_tag: class: 'w-full h-full object-cover', alt: last_item.image.alt, loading: 'eager'
+          }}
+        {%- else -%}
+          <div class="w-full h-full flex items-center justify-center text-3xl">🥭</div>
+        {%- endif -%}
+      </a>
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <a
+          href="{{ last_item.url }}"
+          class="block text-sm font-medium text-bark hover:text-custom-green transition-colors leading-tight mb-1 truncate"
+        >
+          {{ last_item.product.title }}
+        </a>
+        {%- unless last_item.product.has_only_default_variant -%}
+          <div class="text-xs text-bark/50 mb-1">
+            {{ last_item.variant.title }}
+          </div>
+        {%- endunless -%}
+        <div class="flex items-center gap-3 text-xs text-bark/60 mt-1">
+          <span>
+            Price:
+            <span class="font-medium text-bark">{{ last_item.final_price | money }}</span>
+          </span>
+          <span>
+            Qty:
+            <span class="font-medium text-bark">{{ last_item.quantity }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="px-5 pb-5 flex gap-3 border-t border-bark/8 pt-4">
+      <a
+        href="{{ routes.cart_url }}"
+        class="flex-1 border border-custom-green text-custom-green text-center text-xs font-medium py-2.5 rounded-lg hover:bg-custom-green/5 transition-colors"
+      >
+        View My Cart
+      </a>
+      <a
+        href="/checkout"
+        class="flex-1 bg-custom-green text-white text-center text-xs font-medium py-2.5 rounded-lg hover:bg-custom-green-dark transition-colors"
+      >
+        Checkout
+      </a>
+    </div>
+  </div>
+{%- endif -%}

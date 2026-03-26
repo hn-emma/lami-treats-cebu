@@ -54,11 +54,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const value = this.dataset.optionValue;
 
         document.querySelectorAll(`.variant-btn[data-option-position="${position}"]`).forEach((b) => {
-          b.classList.remove('border-cebu-green', 'bg-cebu-green/5', 'text-cebu-green', 'font-medium');
+          b.classList.remove('border-custom-green', 'bg-custom-green/5', 'text-custom-green', 'font-medium');
           b.classList.add('border-bark/15', 'text-bark/70');
         });
 
-        this.classList.add('border-cebu-green', 'bg-cebu-green/5', 'text-cebu-green', 'font-medium');
+        this.classList.add('border-custom-green', 'bg-custom-green/5', 'text-custom-green', 'font-medium');
         this.classList.remove('border-bark/15', 'text-bark/70');
 
         const label = document.getElementById(`option-${position}-label`);
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const selectedOptions = [];
         document.querySelectorAll('.variant-btn').forEach((b) => {
-          if (b.classList.contains('border-cebu-green')) {
+          if (b.classList.contains('border-custom-green')) {
             selectedOptions[parseInt(b.dataset.optionPosition) - 1] = b.dataset.optionValue;
           }
         });
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const availability = document.getElementById('variant-availability');
           if (availability) {
             if (matchedVariant.available) {
-              availability.innerHTML = '<span class="text-cebu-green">✓ In stock</span>';
+              availability.innerHTML = '<span class="text-custom-green">✓ In stock</span>';
               document.getElementById('add-to-cart-btn')?.removeAttribute('disabled');
               document.getElementById('atc-label').textContent = 'Add to Cart';
             } else {
@@ -165,16 +165,16 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!response.ok) throw new Error('Add to cart failed');
 
       label.textContent = '✓ Added!';
-      atcBtn.classList.add('bg-cebu-green-dark');
+      atcBtn.classList.add('bg-custom-green-dark');
 
-      if (typeof openCartDrawer === 'function') {
-        setTimeout(() => openCartDrawer(), 300);
+      if (typeof showCartNotification === 'function') {
+        setTimeout(() => showCartNotification(), 300);
       }
 
       setTimeout(() => {
         label.textContent = originalLabel;
         atcBtn.disabled = false;
-        atcBtn.classList.remove('bg-cebu-green-dark');
+        atcBtn.classList.remove('bg-custom-green-dark');
       }, 2000);
     } catch (error) {
       label.textContent = 'Error — try again';
@@ -190,17 +190,33 @@ document.addEventListener('DOMContentLoaded', function () {
   buyNowBtn?.addEventListener('click', async function () {
     const variantId = document.getElementById('selected-variant-id')?.value;
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
+
     if (!variantId) return;
 
+    const originalLabel = this.textContent;
+    this.disabled = true;
+    this.textContent = 'Redirecting...';
+    this.classList.add('opacity-60', 'cursor-not-allowed');
+
     try {
-      await fetch('/cart/add.js', {
+      const response = await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: parseInt(variantId), quantity }),
+        body: JSON.stringify({
+          id: parseInt(variantId),
+          quantity,
+        }),
       });
+
+      if (!response.ok) throw new Error('Failed to add to cart');
+
       window.location.href = '/checkout';
-    } catch {
-      window.location.href = '/checkout';
+    } catch (error) {
+      console.error('Buy now failed', error);
+
+      this.disabled = false;
+      this.textContent = originalLabel;
+      this.classList.remove('opacity-60', 'cursor-not-allowed');
     }
   });
 
