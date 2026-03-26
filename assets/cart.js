@@ -24,6 +24,15 @@ const CartAPI = {
     if (!response.ok) throw new Error('Cart fetch failed');
     return response.json();
   },
+
+  async clearCart() {
+    const response = await fetch('/cart/clear.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('Cart clear failed');
+    return response.json();
+  },
 };
 
 function updateCartBadge(count) {
@@ -287,6 +296,32 @@ class CartDrawer extends HTMLElement {
       await CartAPI.updateAttributes({
         gift_wrapping: giftToggle.checked ? 'true' : 'false',
       });
+    });
+
+    this.querySelector('.drawer-clear-cart-btn')?.addEventListener('click', async () => {
+      const confirmed = window.confirm('Remove all items from your cart?');
+      if (!confirmed) return;
+
+      try {
+        const btn = this.querySelector('.drawer-clear-cart-btn');
+        if (btn) {
+          btn.textContent = 'Clearing...';
+          btn.disabled = true;
+        }
+
+        await CartAPI.clearCart();
+
+        updateCartBadge(0);
+
+        this.fetchDrawerContent();
+      } catch (error) {
+        console.error('Clear cart failed', error);
+        const btn = this.querySelector('.drawer-clear-cart-btn');
+        if (btn) {
+          btn.textContent = 'Clear Cart';
+          btn.disabled = false;
+        }
+      }
     });
   }
 

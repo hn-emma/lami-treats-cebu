@@ -149,25 +149,6 @@
 
       <!-- ORDER SUMMARY SIDEBAR -->
       <div class="space-y-4">
-        <!-- FREE SHIPPING PROGRESS -->
-        {%- assign free_ship_threshold = section.settings.free_shipping_threshold | times: 100 -%}
-        {%- assign remaining = free_ship_threshold | minus: cart.total_price -%}
-        <div class="bg-custom-green/8 border border-custom-green/20 rounded-xl p-4">
-          {%- if remaining > 0 -%}
-            <div class="text-xs text-custom-green mb-2 font-medium">
-              🚚 Add <strong>{{ remaining | money }}</strong> more for free shipping!
-            </div>
-            <div class="bg-custom-green/15 rounded-full h-2 overflow-hidden">
-              <div
-                class="bg-custom-green h-full rounded-full transition-all duration-500"
-                style="width: {{ cart.total_price | times: 100 | divided_by: free_ship_threshold | at_most: 100 }}%"
-              ></div>
-            </div>
-          {%- else -%}
-            <div class="text-xs text-custom-green font-medium">🎉 You qualify for free shipping!</div>
-          {%- endif -%}
-        </div>
-
         <!-- GIFT WRAPPING -->
         <div class="bg-white border border-bark/10 rounded-xl p-4">
           <div class="flex items-center justify-between">
