@@ -1,29 +1,109 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "home-hero",
-      "settings": {}
+      "settings": {
+        "heading": "Taste the Heart of Cebu",
+        "subheading": "Hand-picked pasalubong delivered fresh to your door.",
+        "hero_image_1": "shopify://shop_images/carcar-chicharon.jpg",
+        "hero_image_2": "shopify://shop_images/Puto-Cheese.jpg",
+        "hero_image_3": "shopify://shop_images/7D-dried-mangoes.jpg",
+        "primary_btn_label": "Shop All Pasalubong",
+        "primary_btn_url": "shopify://collections/all"
+      }
     },
     "trust": {
       "type": "home-trust-bar",
+      "blocks": {
+        "trust_item_kXMbnw": {
+          "type": "trust_item",
+          "settings": {
+            "icon": "🇵🇭",
+            "label": "Made in Cebu"
+          }
+        },
+        "trust_item_zwnprY": {
+          "type": "trust_item",
+          "settings": {
+            "icon": "📦",
+            "label": "Fresh & sealed packaging"
+          }
+        },
+        "trust_item_PpQDcg": {
+          "type": "trust_item",
+          "settings": {
+            "icon": "💳",
+            "label": "COD & Credit Card accepted"
+          }
+        }
+      },
+      "block_order": [
+        "trust_item_kXMbnw",
+        "trust_item_zwnprY",
+        "trust_item_PpQDcg"
+      ],
       "settings": {}
     },
     "featured": {
       "type": "featured-products",
-      "settings": {}
+      "settings": {
+        "label": "Best Sellers",
+        "title": "Lami Kaayo Picks",
+        "subtitle": "Our most-loved Cebu delicacies, packaged with care and ready to ship.",
+        "collection": "featured-products"
+      }
     },
     "testimonials": {
       "type": "testimonials",
-      "settings": {}
+      "blocks": {
+        "testimonial_GE88D4": {
+          "type": "testimonial",
+          "settings": {
+            "avatar": "👩",
+            "name": "Maria Santos",
+            "location": "📍 Manila",
+            "review": "The dried mangoes are absolutely amazing — so much better than anything I've found in Manila!"
+          }
+        }
+      },
+      "block_order": [
+        "testimonial_GE88D4"
+      ],
+      "disabled": true,
+      "settings": {
+        "label": "Reviews",
+        "title": "What Our Customers Say"
+      }
     },
     "story": {
       "type": "story-section",
-      "settings": {}
+      "settings": {
+        "label": "Our Story",
+        "title": "From Cebu to You 🌴",
+        "description": "Every trip back home to Boljoon, Cebu, four hours south of the city, past the centuries-old Boljoon Church and just before the whale sharks of Oslob, meant passing roadside stopover stores packed with pasalubong. Sometimes merchants even hopped on the bus, walking the aisle with Chicharon and Torta. \n\nOne day I thought: why isn't this online? So, I built Lami Treats Cebu! Because every single treat here is, well, lami!",
+        "image": "shopify://shop_images/image0.jpg",
+        "btn_label": "Learn My Story",
+        "btn_url": "https://facebook.com/jammem14"
+      }
     },
     "newsletter": {
       "type": "newsletter",
-      "settings": {}
-    },
+      "settings": {
+        "title": "Get Lami Treats in Your Inbox 🌴",
+        "subtitle": "New products, exclusive bundles, and pasalubong promos — straight to you.",
+        "placeholder": "your@email.com",
+        "btn_label": "Subscribe →"
+      }
+    }
   },
   "order": [
     "hero",

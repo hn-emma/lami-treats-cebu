@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#1A6B3C"/>
+
+  <!-- Palm leaf top left -->
+  <ellipse cx="28" cy="14" rx="12" ry="4.5" fill="#FEFCF8" transform="rotate(-40 28 14)" opacity="0.9"/>
+  <!-- Palm leaf top right -->
+  <ellipse cx="38" cy="12" rx="11" ry="4" fill="#FEFCF8" transform="rotate(-15 38 12)" opacity="0.75"/>
+  <!-- Palm leaf left -->
+  <ellipse cx="20" cy="20" rx="10" ry="3.5" fill="#FEFCF8" transform="rotate(-62 20 20)" opacity="0.8"/>
+
+  <!-- Mango body -->
+  <ellipse cx="32" cy="42" rx="13" ry="18" fill="#E8800A" transform="rotate(-6 32 42)"/>
+
+  <!-- Mango highlight -->
+  <ellipse cx="34" cy="38" rx="7" ry="11" fill="#F4A935" transform="rotate(-6 34 38)" opacity="0.55"/>
+
+  <!-- Stem -->
+  <line x1="32" y1="25" x2="32" y2="16" stroke="#FEFCF8" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Small leaf on stem -->
+  <ellipse cx="37" cy="20" rx="6" ry="2.5" fill="#FEFCF8" transform="rotate(-28 37 20)" opacity="0.85"/>
+</svg>

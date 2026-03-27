@@ -9,6 +9,8 @@
 
     {{ content_for_header }}
 
+    <link rel="shortcut icon" href="{{ 'lami-treats-favicon.svg' | asset_url }}" type="image/svg+xml">
+
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged &ldquo;{{ current_tags | join: ', ' }}&rdquo;{% endif -%}
