@@ -22,46 +22,48 @@
       </collection-filters>
 
       <div class="collection-grid flex-1 min-w-0">
-        <div class="collection-type-pills flex flex-wrap gap-2 mb-6">
-          {%- assign type_filter = collection.filters | where: 'label', 'Product type' | first -%}
-          {%- if type_filter -%}
-            {%- assign has_active_type = false -%}
-            {%- for value in type_filter.values -%}
-              {%- if value.active -%}{%- assign has_active_type = true -%}{%- endif -%}
-            {%- endfor -%}
+        {%- if collection.handle == 'all' -%}
+          <div class="collection-type-pills flex flex-wrap gap-2 mb-6">
+            {%- assign type_filter = collection.filters | where: 'label', 'Product type' | first -%}
+            {%- if type_filter -%}
+              {%- assign has_active_type = false -%}
+              {%- for value in type_filter.values -%}
+                {%- if value.active -%}{%- assign has_active_type = true -%}{%- endif -%}
+              {%- endfor -%}
 
-            <button
-              data-url="{{ collection.url }}"
-              class="
-                type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
-                {% if has_active_type == false %}bg-custom-green text-white border-custom-green
-                {% else %}bg-white text-bark/60 border-bark/15 hover:border-custom-green hover:text-custom-green{% endif %}
-              "
-            >
-              All
-            </button>
-
-            {%- for value in type_filter.values -%}
               <button
-                data-url="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                data-url="{{ collection.url }}"
                 class="
                   type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
-                  {% if value.active %}bg-custom-green text-white border-custom-green
-                  {% elsif value.count == 0 %}bg-white text-bark/30 border-bark/10 opacity-50 cursor-not-allowed
+                  {% if has_active_type == false %}bg-custom-green text-white border-custom-green
                   {% else %}bg-white text-bark/60 border-bark/15 hover:border-custom-green hover:text-custom-green{% endif %}
                 "
-                {% if value.count == 0 and value.active == false %}
-                  disabled
-                {% endif %}
               >
-                {{ value.label }}
-                <span class="{% if value.active %}text-white/70{% else %}text-bark/35{% endif %} ml-0.5 text-[10px]">
-                  {{ value.count }}
-                </span>
+                All
               </button>
-            {%- endfor -%}
-          {%- endif -%}
-        </div>
+
+              {%- for value in type_filter.values -%}
+                <button
+                  data-url="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                  class="
+                    type-pill text-xs font-medium px-4 py-2 rounded-full border transition-colors duration-200 cursor-pointer
+                    {% if value.active %}bg-custom-green text-white border-custom-green
+                    {% elsif value.count == 0 %}bg-white text-bark/30 border-bark/10 opacity-50 cursor-not-allowed
+                    {% else %}bg-white text-bark/60 border-bark/15 hover:border-custom-green hover:text-custom-green{% endif %}
+                  "
+                  {% if value.count == 0 and value.active == false %}
+                    disabled
+                  {% endif %}
+                >
+                  {{ value.label }}
+                  <span class="{% if value.active %}text-white/70{% else %}text-bark/35{% endif %} ml-0.5 text-[10px]">
+                    {{ value.count }}
+                  </span>
+                </button>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
 
         <div class="mb-5">
           <span class="text-xs text-bark/50" id="product-count">
