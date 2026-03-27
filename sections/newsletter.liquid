@@ -19,13 +19,13 @@
         >
         <button
           type="submit"
-          class="bg-bark text-mango-light text-sm font-medium px-6 py-3 rounded-lg hover:bg-bark/90 transition-colors duration-200"
+          class="bg-bark text-mango-light text-sm font-medium px-6 py-3 rounded-lg hover:bg-bark/90 transition-colors duration-200 cursor-pointer"
         >
           {{ section.settings.btn_label }}
         </button>
       </div>
       {%- if form.posted_successfully? -%}
-        <p class="mt-4 text-sm text-bark font-medium">🎉 You're subscribed! Salamat!</p>
+        <p class="mt-4 text-sm text-bark font-medium">You're subscribed! Salamat!</p>
       {%- endif -%}
     {%- endform -%}
   </div>
