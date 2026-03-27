@@ -149,6 +149,18 @@
           ></div>
         </label>
       </div>
+      <div
+        id="gift-message-wrap"
+        class="{% if drawer_gift_items.size == 0 %}hidden{% endif %} mt-3"
+      >
+        <input
+          type="text"
+          id="cart-gift-message"
+          placeholder="Your message e.g. Happy Birthday! 🌴"
+          value="{{ cart.attributes.gift_message | escape }}"
+          class="w-full border border-bark/10 rounded-lg px-3 py-2 text-xs bg-white outline-none focus:border-custom-green transition-colors"
+        >
+      </div>
 
       <!-- Totals -->
       <div class="flex items-center justify-between text-sm">
@@ -163,7 +175,7 @@
         href="/checkout"
         class="block w-full bg-custom-green text-white text-center font-medium text-sm py-3 rounded-xl hover:bg-custom-green-dark transition-colors"
       >
-        Checkout → {{ cart.total_price | money }}
+        Checkout → <span class="checkout-total-price">{{ cart.total_price | money }}</span>
       </a>
       <a
         href="{{ routes.cart_url }}"

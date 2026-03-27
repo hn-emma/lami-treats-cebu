@@ -16,6 +16,6 @@
   --font-body: 'DM Sans', sans-serif;
 }
 
-#main-product-image {
-  transition: opacity 0.15s ease;
+.price-loading {
+  @apply animate-pulse bg-sand-dark text-transparent rounded pointer-events-none min-w-[60px] inline-block;
 }

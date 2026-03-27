@@ -92,6 +92,14 @@ async function handleGiftWrapToggle(toggle, onSuccess) {
   const container = toggle.closest('label') || toggle.parentElement;
   container?.classList.add('opacity-50', 'pointer-events-none');
 
+  const priceElements = document.querySelectorAll(
+    '#cart-subtotal, #cart-total, #drawer-subtotal, .checkout-total-price',
+  );
+  priceElements.forEach((item) => {
+    item.dataset.originalText = item.textContent;
+    item.classList.add('price-loading');
+  });
+
   try {
     if (toggle.checked) {
       await CartAPI.addItem(parseInt(variantId), 1, { _gift_wrap: 'true' });
@@ -111,14 +119,25 @@ async function handleGiftWrapToggle(toggle, onSuccess) {
       currency: 'PHP',
     });
 
-    document.querySelectorAll('#cart-subtotal, #cart-total').forEach((el) => {
-      el.textContent = formatted;
+    priceElements.forEach((item) => {
+      item.classList.remove('price-loading');
+      item.textContent = formatted;
+      delete item.dataset.originalText;
     });
 
     if (typeof onSuccess === 'function') onSuccess(cart);
   } catch (error) {
     console.error('Gift wrap toggle failed', error);
     toggle.checked = !toggle.checked;
+
+    priceElements.forEach((item) => {
+      item.classList.remove('price-loading');
+      if (item.dataset.originalText) {
+        item.textContent = item.dataset.originalText;
+        delete item.dataset.originalText;
+      }
+    });
+
     showErrorNotification(CartErrors.gift_error, 'Gift Wrap Error');
   } finally {
     toggle.disabled = false;
@@ -190,6 +209,9 @@ class CartItems extends HTMLElement {
       itemEl.style.pointerEvents = 'none';
     }
 
+    document.getElementById('cart-subtotal')?.classList.add('price-loading');
+    document.getElementById('cart-total')?.classList.add('price-loading');
+
     try {
       const cart = await CartAPI.updateItem(key, newQty);
 
@@ -205,6 +227,17 @@ class CartItems extends HTMLElement {
       } else if (itemEl) {
         itemEl.style.opacity = '1';
         itemEl.style.pointerEvents = '';
+
+        const updatedItem = cart.items.find((i) => i.key === key);
+        if (updatedItem) {
+          const lineTotalEl = itemEl.querySelector('.cart-line-total');
+          if (lineTotalEl) {
+            lineTotalEl.textContent = (updatedItem.line_price / 100).toLocaleString('en-PH', {
+              style: 'currency',
+              currency: 'PHP',
+            });
+          }
+        }
       }
 
       this.updateTotals(cart);
@@ -231,8 +264,15 @@ class CartItems extends HTMLElement {
     });
     const subtotalEl = document.getElementById('cart-subtotal');
     const totalEl = document.getElementById('cart-total');
-    if (subtotalEl) subtotalEl.textContent = formatted;
-    if (totalEl) totalEl.textContent = formatted;
+
+    if (subtotalEl) {
+      subtotalEl.classList.remove('price-loading');
+      subtotalEl.textContent = formatted;
+    }
+    if (totalEl) {
+      totalEl.classList.remove('price-loading');
+      totalEl.textContent = formatted;
+    }
   }
 
   checkEmpty(cart) {
@@ -380,7 +420,12 @@ class CartDrawer extends HTMLElement {
     });
 
     const giftToggle = this.querySelector('.drawer-gift-toggle');
+    const giftMessageWrap = this.querySelector('.gift-message-wrap');
     giftToggle?.addEventListener('change', async () => {
+      if (giftMessageWrap) {
+        giftMessageWrap.classList.toggle('hidden', !giftToggle.checked);
+      }
+
       await handleGiftWrapToggle(giftToggle, () => {
         this.fetchDrawerContent();
       });

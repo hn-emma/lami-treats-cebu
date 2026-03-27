@@ -121,7 +121,7 @@
                     <!-- Line total -->
                     <div class="col-span-4 md:col-span-2 text-sm font-medium text-mango-dark md:text-right">
                       <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Total</span>
-                      {{ item.line_price | money }}
+                      <span class="cart-line-total">{{ item.line_price | money }}</span>
                     </div>
                   </div>
                 {%- endunless -%}
@@ -182,7 +182,7 @@
               >
               <div
                 class="
-                  relative w-9 h-5 bg-bark/20 rounded-full transition-colors cursor-pointer
+                  relative w-9 h-5 bg-mango-dark/70 rounded-full transition-colors cursor-pointer
                   peer-checked:bg-custom-green
                   after:content-[''] after:absolute after:top-0.5 after:left-0.5
                   after:bg-white after:rounded-full after:h-4 after:w-4
