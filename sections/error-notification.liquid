@@ -1,0 +1,32 @@
+<div class="error-notification-inner">
+  <div class="flex items-center justify-between px-5 py-3.5 border-b border-red-100">
+    <div class="flex items-center gap-2">
+      <span class="text-base">⚠️</span>
+      <span class="text-sm font-medium text-red-600">
+        {{- section.settings.title | default: 'Something went wrong' -}}
+      </span>
+    </div>
+    <button
+      class="error-notification-close w-7 h-7 rounded-full border border-red-100 flex items-center justify-center text-xs text-red-400 hover:bg-red-50 transition-colors cursor-pointer"
+      aria-label="Close"
+    >
+      ✕
+    </button>
+  </div>
+  <div class="px-5 py-4">
+    <p class="text-xs text-bark/60 leading-relaxed" id="error-notification-message">
+      {{ section.settings.message | default: 'An unexpected error occurred. Please try again.' }}
+    </p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Error Notification",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title" },
+    { "type": "text", "id": "message", "label": "Message" }
+  ],
+  "presets": [{ "name": "Error Notification" }]
+}
+{% endschema %}

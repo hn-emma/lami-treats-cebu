@@ -231,22 +231,6 @@
             </div>
           </div>
 
-          <!-- PROMO CODE -->
-          <div class="flex gap-2 mb-4">
-            <input
-              type="text"
-              id="promo-code-input"
-              placeholder="Promo code"
-              class="flex-1 border border-bark/10 rounded-lg px-3 py-2 text-xs bg-sand outline-none focus:border-custom-green transition-colors"
-            >
-            <button
-              id="promo-apply-btn"
-              class="border border-custom-green text-custom-green text-xs font-medium px-3 py-2 rounded-lg hover:bg-custom-green/5 transition-colors cursor-pointer whitespace-nowrap"
-            >
-              Apply
-            </button>
-          </div>
-
           <!-- CHECKOUT BUTTON -->
           <a
             href="/checkout"
@@ -254,12 +238,11 @@
           >
             Proceed to Checkout →
           </a>
-          <div class="text-center text-xs text-bark/40 mt-3">🔒 Secure checkout · COD available</div>
         </div>
 
         <!-- PAYMENT ICONS -->
         <div class="flex flex-wrap items-center justify-center gap-2">
-          {%- assign payment_methods = 'Visa,Mastercard,GCash,Maya,COD' | split: ',' -%}
+          {%- assign payment_methods = 'Credit Card,Cash on Delivery' | split: ',' -%}
           {%- for method in payment_methods -%}
             <span class="bg-white border border-bark/10 text-bark/50 text-[10px] font-medium px-2.5 py-1 rounded">
               {{ method }}

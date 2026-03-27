@@ -1,3 +1,14 @@
+function getCartErrorMessage(error, response) {
+  if (!navigator.onLine) return CartErrors.network_error;
+  if (response?.status === 422) {
+    const desc = response?.description?.toLowerCase() || '';
+    if (desc.includes('sold out') || desc.includes('all available stock')) return CartErrors.sold_out;
+    if (desc.includes('not enough') || desc.includes('only')) return CartErrors.not_enough;
+    return response.description || CartErrors.cart_error;
+  }
+  return CartErrors.generic;
+}
+
 const CartAPI = {
   async updateItem(key, quantity) {
     const response = await fetch('/cart/change.js', {
@@ -5,7 +16,7 @@ const CartAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: key, quantity }),
     });
-    if (!response.ok) throw new Error('Cart update failed');
+    if (!response.ok) return handleShopifyError(response);
     return response.json();
   },
 
@@ -34,6 +45,18 @@ const CartAPI = {
     return response.json();
   },
 
+  async addItem(variantId, quantity = 1, properties = {}) {
+    const response = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity, properties }),
+    });
+
+    console.log('Add item response', response);
+    if (!response.ok) return handleShopifyError(response);
+    return response.json();
+  },
+
   async updateAll(updates) {
     const response = await fetch('/cart/update.js', {
       method: 'POST',
@@ -47,16 +70,11 @@ const CartAPI = {
 
 function updateCartBadge(cartOrCount) {
   let count;
-
   if (typeof cartOrCount === 'object') {
-    const giftId = Number('{{ settings.global_gift_wrap_variant_id }}');
-    count = cartOrCount.items.reduce((total, item) => {
-      return item.variant_id === giftId ? total : total + item.quantity;
-    }, 0);
+    count = cartOrCount.item_count;
   } else {
     count = cartOrCount;
   }
-
   document.querySelectorAll('.cart-count-badge').forEach((badge) => {
     badge.textContent = count;
     badge.style.display = count > 0 ? 'flex' : 'none';
@@ -65,24 +83,18 @@ function updateCartBadge(cartOrCount) {
 
 async function handleGiftWrapToggle(toggle, onSuccess) {
   const variantId = toggle.dataset.giftVariantId;
-  const container = toggle.closest('label') || toggle.parentElement; // Find the wrapper
-
-  if (!variantId) return;
+  if (!variantId) {
+    showErrorNotification('Gift wrap is not configured. Please contact us for assistance.', 'Gift Wrap Unavailable');
+    return;
+  }
 
   toggle.disabled = true;
-  container.classList.add('opacity-50', 'pointer-events-none', 'animate-pulse');
+  const container = toggle.closest('label') || toggle.parentElement;
+  container?.classList.add('opacity-50', 'pointer-events-none');
 
   try {
     if (toggle.checked) {
-      await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: parseInt(variantId),
-          quantity: 1,
-          properties: { _gift_wrap: 'true' },
-        }),
-      });
+      await CartAPI.addItem(parseInt(variantId), 1, { _gift_wrap: 'true' });
     } else {
       await CartAPI.updateAll({ [variantId]: 0 });
     }
@@ -92,7 +104,6 @@ async function handleGiftWrapToggle(toggle, onSuccess) {
     });
 
     const cart = await CartAPI.getCart();
-
     updateCartBadge(cart);
 
     const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
@@ -108,9 +119,10 @@ async function handleGiftWrapToggle(toggle, onSuccess) {
   } catch (error) {
     console.error('Gift wrap toggle failed', error);
     toggle.checked = !toggle.checked;
+    showErrorNotification(CartErrors.gift_error, 'Gift Wrap Error');
   } finally {
     toggle.disabled = false;
-    container.classList.remove('opacity-50', 'pointer-events-none', 'animate-pulse');
+    container?.classList.remove('opacity-50', 'pointer-events-none');
   }
 }
 
@@ -146,56 +158,33 @@ class CartItems extends HTMLElement {
 
     giftToggle?.addEventListener('change', async () => {
       giftMessageWrap?.classList.toggle('hidden', !giftToggle.checked);
-
       await handleGiftWrapToggle(giftToggle, (cart) => {
-        const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
-          style: 'currency',
-          currency: 'PHP',
-        });
-        const subtotalEl = document.getElementById('cart-subtotal');
-        const totalEl = document.getElementById('cart-total');
-        if (subtotalEl) subtotalEl.textContent = formatted;
-        if (totalEl) totalEl.textContent = formatted;
+        this.updateTotals(cart);
       });
     });
 
     const giftMessageInput = document.getElementById('cart-gift-message');
-
-    giftToggle?.addEventListener('change', async () => {
-      giftMessageWrap?.classList.toggle('hidden', !giftToggle.checked);
-      await CartAPI.updateAttributes({
-        gift_wrapping: giftToggle.checked ? 'true' : 'false',
-      });
-    });
-
     giftMessageInput?.addEventListener('change', async () => {
-      await CartAPI.updateAttributes({
-        gift_message: giftMessageInput.value,
-      });
+      try {
+        await CartAPI.updateAttributes({ gift_message: giftMessageInput.value });
+      } catch {
+        showErrorNotification("We couldn't save your gift message. Please try again.", 'Gift Message Error');
+      }
     });
-
-    const hiddenAttr = document.getElementById('gift-attr-input');
-    if (hiddenAttr) hiddenAttr.value = giftMessageInput.value;
 
     const cartNote = document.getElementById('cart-note');
     cartNote?.addEventListener('change', async () => {
-      await fetch('/cart/update.js', {
+      const response = await fetch('/cart/update.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ note: cartNote.value }),
       });
-    });
-
-    document.getElementById('promo-apply-btn')?.addEventListener('click', () => {
-      const code = document.getElementById('promo-code-input')?.value?.trim();
-      if (!code) return;
-      window.location.href = `/checkout?discount=${encodeURIComponent(code)}`;
+      if (!response.ok) return handleShopifyError(response);
     });
   }
 
   async updateItemQty(key, newQty, itemEl, qtyEl) {
     if (qtyEl) qtyEl.textContent = newQty;
-
     if (itemEl) {
       itemEl.style.opacity = '0.5';
       itemEl.style.pointerEvents = 'none';
@@ -219,31 +208,35 @@ class CartItems extends HTMLElement {
       }
 
       this.updateTotals(cart);
-      updateCartBadge(cart.item_count);
+      updateCartBadge(cart);
     } catch (error) {
       console.error('Cart update failed', error);
       if (itemEl) {
         itemEl.style.opacity = '1';
         itemEl.style.pointerEvents = '';
       }
+      if (qtyEl) {
+        const cart = await CartAPI.getCart().catch(() => null);
+        const item = cart?.items?.find((i) => i.key === key);
+        if (item && qtyEl) qtyEl.textContent = item.quantity;
+      }
+      showErrorNotification(getCartErrorMessage(error, error), 'Cart Update Failed');
     }
   }
 
   updateTotals(cart) {
-    const subtotalEl = document.getElementById('cart-subtotal');
-    const totalEl = document.getElementById('cart-total');
     const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
       style: 'currency',
       currency: 'PHP',
     });
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const totalEl = document.getElementById('cart-total');
     if (subtotalEl) subtotalEl.textContent = formatted;
     if (totalEl) totalEl.textContent = formatted;
   }
 
   checkEmpty(cart) {
-    if (cart.item_count === 0) {
-      window.location.reload();
-    }
+    if (cart.item_count === 0) window.location.reload();
   }
 }
 
@@ -263,18 +256,11 @@ class CartDrawer extends HTMLElement {
         id="cart-drawer-overlay"
         class="fixed inset-0 z-50 flex justify-end"
         style="background: rgba(28,18,8,0); transition: background 0.3s ease;">
-
-        <div
-          id="cart-drawer-backdrop"
-          class="absolute inset-0 cursor-pointer">
-        </div>
-
+        <div id="cart-drawer-backdrop" class="absolute inset-0 cursor-pointer"></div>
         <div
           id="cart-drawer-panel"
           class="relative w-80 max-w-full bg-white h-full flex flex-col shadow-2xl"
           style="transform: translateX(100%); transition: transform 0.3s ease;">
-
-          <!-- Loading state shown immediately -->
           <div id="cart-drawer-content" class="flex flex-col h-full">
             <div class="flex items-center justify-between px-5 py-4 border-b border-bark/10">
               <span class="font-display text-lg font-bold text-bark">Your Cart</span>
@@ -293,18 +279,15 @@ class CartDrawer extends HTMLElement {
               </div>
             </div>
           </div>
-
         </div>
       </div>`;
 
     document.getElementById('cart-drawer-backdrop')?.addEventListener('click', () => this.close());
-
     document.getElementById('cart-drawer-close-temp')?.addEventListener('click', () => this.close());
 
     setTimeout(() => {
       const overlay = document.getElementById('cart-drawer-overlay');
       const panel = document.getElementById('cart-drawer-panel');
-
       if (overlay) overlay.style.background = 'rgba(28,18,8,0.5)';
       if (panel) panel.style.transform = 'translateX(0)';
     }, 10);
@@ -322,7 +305,6 @@ class CartDrawer extends HTMLElement {
       })
       .then((html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
-
         const sectionContent = doc.querySelector('#shopify-section-cart-drawer');
         const contentEl = document.getElementById('cart-drawer-content');
 
@@ -343,8 +325,24 @@ class CartDrawer extends HTMLElement {
             <div class="flex-1 flex items-center justify-center p-6 text-center">
               <div>
                 <div class="text-3xl mb-3 opacity-30">⚠️</div>
-                <p class="text-sm text-bark/50 mb-4">Could not load cart.<br>Please try again.</p>
-                <a href="/cart" class="text-xs text-custom-green font-medium hover:underline">View Cart Page →</a>
+                <p class="text-sm text-bark/50 mb-2">Could not load your cart.</p>
+                <p class="text-xs text-bark/40 mb-4">
+                  ${
+                    !navigator.onLine
+                      ? 'You appear to be offline. Check your connection and try again.'
+                      : 'There was a problem connecting to Shopify. Please try again.'
+                  }
+                </p>
+                <div class="flex gap-2 justify-center">
+                  <button
+                    onclick="this.closest('cart-drawer').fetchDrawerContent()"
+                    class="text-xs bg-cebu-green text-white px-4 py-2 rounded-lg cursor-pointer">
+                    Retry
+                  </button>
+                  <a href="/cart" class="text-xs border border-cebu-green text-cebu-green px-4 py-2 rounded-lg">
+                    View Cart
+                  </a>
+                </div>
               </div>
             </div>`;
           this.bindDrawerEvents();
@@ -377,17 +375,13 @@ class CartDrawer extends HTMLElement {
 
     this.querySelectorAll('.drawer-remove-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const key = btn.dataset.itemKey;
-        this.updateDrawerItem(key, 0, btn.closest('.cart-drawer-item'));
+        this.updateDrawerItem(btn.dataset.itemKey, 0, btn.closest('.cart-drawer-item'));
       });
     });
 
     const giftToggle = this.querySelector('.drawer-gift-toggle');
     giftToggle?.addEventListener('change', async () => {
-      const priceElements = document.querySelectorAll('#cart-subtotal, #cart-total');
-      priceElements.forEach((item) => item.classList.add('opacity-50'));
-
-      await handleGiftWrapToggle(giftToggle, (cart) => {
+      await handleGiftWrapToggle(giftToggle, () => {
         this.fetchDrawerContent();
       });
     });
@@ -396,25 +390,22 @@ class CartDrawer extends HTMLElement {
       const confirmed = window.confirm('Remove all items from your cart?');
       if (!confirmed) return;
 
+      const btn = this.querySelector('.drawer-clear-cart-btn');
+      if (btn) {
+        btn.textContent = 'Clearing...';
+        btn.disabled = true;
+      }
+
       try {
-        const btn = this.querySelector('.drawer-clear-cart-btn');
-        if (btn) {
-          btn.textContent = 'Clearing...';
-          btn.disabled = true;
-        }
-
         await CartAPI.clearCart();
-
         updateCartBadge(0);
-
         this.fetchDrawerContent();
-      } catch (error) {
-        console.error('Clear cart failed', error);
-        const btn = this.querySelector('.drawer-clear-cart-btn');
+      } catch {
         if (btn) {
           btn.textContent = 'Clear Cart';
           btn.disabled = false;
         }
+        showErrorNotification(CartErrors.clear_error, 'Clear Cart Failed');
       }
     });
   }
@@ -428,9 +419,7 @@ class CartDrawer extends HTMLElement {
 
     try {
       const cart = await CartAPI.updateItem(key, newQty);
-
-      updateCartBadge(cart.item_count);
-
+      updateCartBadge(cart);
       this.fetchDrawerContent();
     } catch (error) {
       console.error('Drawer cart update failed', error);
@@ -438,16 +427,15 @@ class CartDrawer extends HTMLElement {
         itemEl.style.opacity = '1';
         itemEl.style.pointerEvents = '';
       }
+      showErrorNotification(getCartErrorMessage(error, error), 'Cart Update Failed');
     }
   }
 
   close() {
     const overlay = document.getElementById('cart-drawer-overlay');
     const panel = document.getElementById('cart-drawer-panel');
-
     if (panel) panel.style.transform = 'translateX(100%)';
     if (overlay) overlay.style.background = 'rgba(28,18,8,0)';
-
     setTimeout(() => {
       this.remove();
       document.body.style.overflow = '';
@@ -460,15 +448,9 @@ if (!customElements.get('cart-drawer')) {
 }
 
 function openCartDrawer() {
-  const existing = document.querySelector('cart-drawer');
-  if (existing) {
-    existing.remove();
-  }
-
+  document.querySelector('cart-drawer')?.remove();
   document.body.style.overflow = 'hidden';
-
-  const drawer = document.createElement('cart-drawer');
-  document.body.appendChild(drawer);
+  document.body.appendChild(document.createElement('cart-drawer'));
 }
 
 document.addEventListener('click', async function (e) {
@@ -483,21 +465,13 @@ document.addEventListener('click', async function (e) {
     </svg>`;
 
   try {
-    await fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: parseInt(btn.dataset.variantId),
-        quantity: 1,
-      }),
-    });
-
+    await CartAPI.addItem(parseInt(btn.dataset.variantId), 1);
     const cart = await CartAPI.getCart();
-    updateCartBadge(cart.item_count);
-
+    updateCartBadge(cart);
     showCartNotification();
   } catch (error) {
     console.error('Add to cart failed', error);
+    showErrorNotification(getCartErrorMessage(error, error), "Couldn't Add to Cart");
   } finally {
     btn.disabled = false;
     btn.innerHTML = originalContent;
