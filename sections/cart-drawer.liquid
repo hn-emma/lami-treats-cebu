@@ -23,82 +23,84 @@
     {%- if cart.item_count > 0 -%}
       <div class="space-y-0 divide-y divide-bark/8">
         {%- for item in cart.items -%}
-          <div
-            class="cart-drawer-item flex gap-3 py-4"
-            id="drawer-item-{{ item.key }}"
-          >
-            <!-- Image -->
-            <a href="{{ item.url }}" class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block">
-              {%- if item.image -%}
-                {{
-                  item.image
-                  | image_url: width: 160
-                  | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
-                }}
-              {%- else -%}
-                <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
-              {%- endif -%}
-            </a>
-
-            <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <a
-                href="{{ item.url }}"
-                class="block text-sm font-medium text-bark hover:text-custom-green transition-colors leading-tight mb-0.5 truncate"
-              >
-                {{ item.product.title }}
+          {%- unless item.properties._gift_wrap == 'true' -%}
+            <div
+              class="cart-drawer-item flex gap-3 py-4"
+              id="drawer-item-{{ item.key }}"
+            >
+              <!-- Image -->
+              <a href="{{ item.url }}" class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block">
+                {%- if item.image -%}
+                  {{
+                    item.image
+                    | image_url: width: 160
+                    | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
+                  }}
+                {%- else -%}
+                  <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
+                {%- endif -%}
               </a>
-              {%- unless item.product.has_only_default_variant -%}
-                <div class="text-xs text-bark/50 mb-1">{{ item.variant.title }}</div>
-              {%- endunless -%}
-              {%- if item.properties.size > 0 -%}
-                <div class="mb-1">
-                  {%- for property in item.properties -%}
-                    {%- unless property.last == blank -%}
-                      <div class="text-[10px] text-bark/45">{{ property.first }}: {{ property.last }}</div>
-                    {%- endunless -%}
-                  {%- endfor -%}
-                </div>
-              {%- endif -%}
 
-              <!-- Price + Qty controls -->
-              <div class="flex items-center justify-between mt-2">
-                <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
-                  <button
-                    class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
-                    data-item-key="{{ item.key }}"
-                    data-action="decrease"
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span class="w-7 text-center text-xs font-medium text-bark drawer-qty-value">
-                    {{ item.quantity }}
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <a
+                  href="{{ item.url }}"
+                  class="block text-sm font-medium text-bark hover:text-custom-green transition-colors leading-tight mb-0.5 truncate"
+                >
+                  {{ item.product.title }}
+                </a>
+                {%- unless item.product.has_only_default_variant -%}
+                  <div class="text-xs text-bark/50 mb-1">{{ item.variant.title }}</div>
+                {%- endunless -%}
+                {%- if item.properties.size > 0 -%}
+                  <div class="mb-1">
+                    {%- for property in item.properties -%}
+                      {%- unless property.last == blank -%}
+                        <div class="text-[10px] text-bark/45">{{ property.first }}: {{ property.last }}</div>
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                <!-- Price + Qty controls -->
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
+                    <button
+                      class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
+                      data-item-key="{{ item.key }}"
+                      data-action="decrease"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span class="w-7 text-center text-xs font-medium text-bark drawer-qty-value">
+                      {{ item.quantity }}
+                    </span>
+                    <button
+                      class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
+                      data-item-key="{{ item.key }}"
+                      data-action="increase"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <span class="text-sm font-medium text-mango-dark">
+                    {{ item.line_price | money }}
                   </span>
-                  <button
-                    class="drawer-qty-btn w-6 h-6 bg-sand flex items-center justify-center text-bark text-xs hover:bg-sand-dark transition-colors cursor-pointer"
-                    data-item-key="{{ item.key }}"
-                    data-action="increase"
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
                 </div>
-                <span class="text-sm font-medium text-mango-dark">
-                  {{ item.line_price | money }}
-                </span>
-              </div>
 
-              <!-- Remove -->
-              <button
-                class="drawer-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer block"
-                data-item-key="{{ item.key }}"
-                aria-label="Remove {{ item.product.title }}"
-              >
-                Remove
-              </button>
+                <!-- Remove -->
+                <button
+                  class="drawer-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer block"
+                  data-item-key="{{ item.key }}"
+                  aria-label="Remove {{ item.product.title }}"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
-          </div>
+          {%- endunless -%}
         {%- endfor -%}
       </div>
     {%- else -%}
@@ -125,10 +127,15 @@
           <div class="text-[10px] text-bark/50">+₱35 — kraft wrap & card</div>
         </div>
         <label class="relative inline-flex items-center cursor-pointer">
+          {%- assign gift_id_number = settings.global_gift_wrap_variant_id | plus: 0 -%}
+          {%- assign drawer_gift_items = cart.items | where: 'variant_id', gift_id_number -%}
+
           <input
             type="checkbox"
+            id="cart-gift-toggle"
             class="sr-only peer drawer-gift-toggle"
-            {% if cart.attributes.gift_wrapping == 'true' %}
+            data-gift-variant-id="{{ settings.global_gift_wrap_variant_id }}"
+            {% if drawer_gift_items.size > 0 %}
               checked
             {% endif %}
           >

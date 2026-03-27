@@ -33,13 +33,85 @@ const CartAPI = {
     if (!response.ok) throw new Error('Cart clear failed');
     return response.json();
   },
+
+  async updateAll(updates) {
+    const response = await fetch('/cart/update.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ updates }),
+    });
+    if (!response.ok) throw new Error('Cart global update failed');
+    return response.json();
+  },
 };
 
-function updateCartBadge(count) {
+function updateCartBadge(cartOrCount) {
+  let count;
+
+  if (typeof cartOrCount === 'object') {
+    const giftId = Number('{{ settings.global_gift_wrap_variant_id }}');
+    count = cartOrCount.items.reduce((total, item) => {
+      return item.variant_id === giftId ? total : total + item.quantity;
+    }, 0);
+  } else {
+    count = cartOrCount;
+  }
+
   document.querySelectorAll('.cart-count-badge').forEach((badge) => {
     badge.textContent = count;
     badge.style.display = count > 0 ? 'flex' : 'none';
   });
+}
+
+async function handleGiftWrapToggle(toggle, onSuccess) {
+  const variantId = toggle.dataset.giftVariantId;
+  const container = toggle.closest('label') || toggle.parentElement; // Find the wrapper
+
+  if (!variantId) return;
+
+  toggle.disabled = true;
+  container.classList.add('opacity-50', 'pointer-events-none', 'animate-pulse');
+
+  try {
+    if (toggle.checked) {
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: parseInt(variantId),
+          quantity: 1,
+          properties: { _gift_wrap: 'true' },
+        }),
+      });
+    } else {
+      await CartAPI.updateAll({ [variantId]: 0 });
+    }
+
+    await CartAPI.updateAttributes({
+      gift_wrapping: toggle.checked ? 'true' : 'false',
+    });
+
+    const cart = await CartAPI.getCart();
+
+    updateCartBadge(cart);
+
+    const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
+      style: 'currency',
+      currency: 'PHP',
+    });
+
+    document.querySelectorAll('#cart-subtotal, #cart-total').forEach((el) => {
+      el.textContent = formatted;
+    });
+
+    if (typeof onSuccess === 'function') onSuccess(cart);
+  } catch (error) {
+    console.error('Gift wrap toggle failed', error);
+    toggle.checked = !toggle.checked;
+  } finally {
+    toggle.disabled = false;
+    container.classList.remove('opacity-50', 'pointer-events-none', 'animate-pulse');
+  }
 }
 
 class CartItems extends HTMLElement {
@@ -71,6 +143,22 @@ class CartItems extends HTMLElement {
 
     const giftToggle = document.getElementById('cart-gift-toggle');
     const giftMessageWrap = document.getElementById('gift-message-wrap');
+
+    giftToggle?.addEventListener('change', async () => {
+      giftMessageWrap?.classList.toggle('hidden', !giftToggle.checked);
+
+      await handleGiftWrapToggle(giftToggle, (cart) => {
+        const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
+          style: 'currency',
+          currency: 'PHP',
+        });
+        const subtotalEl = document.getElementById('cart-subtotal');
+        const totalEl = document.getElementById('cart-total');
+        if (subtotalEl) subtotalEl.textContent = formatted;
+        if (totalEl) totalEl.textContent = formatted;
+      });
+    });
+
     const giftMessageInput = document.getElementById('cart-gift-message');
 
     giftToggle?.addEventListener('change', async () => {
@@ -296,8 +384,11 @@ class CartDrawer extends HTMLElement {
 
     const giftToggle = this.querySelector('.drawer-gift-toggle');
     giftToggle?.addEventListener('change', async () => {
-      await CartAPI.updateAttributes({
-        gift_wrapping: giftToggle.checked ? 'true' : 'false',
+      const priceElements = document.querySelectorAll('#cart-subtotal, #cart-total');
+      priceElements.forEach((item) => item.classList.add('opacity-50'));
+
+      await handleGiftWrapToggle(giftToggle, (cart) => {
+        this.fetchDrawerContent();
       });
     });
 

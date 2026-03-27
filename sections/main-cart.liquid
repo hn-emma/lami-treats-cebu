@@ -1,10 +1,19 @@
 <div class="max-w-5xl mx-auto px-6 py-10">
+  {%- assign gift_wrap_id = settings.global_gift_wrap_variant_id | plus: 0 -%}
+  {%- assign effective_item_count = 0 -%}
+
+  {%- for item in cart.items -%}
+    {%- unless item.variant_id == gift_wrap_id -%}
+      {%- assign effective_item_count = effective_item_count | plus: item.quantity -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
   <h1 class="font-display text-3xl font-bold text-bark mb-8">
     Your Cart
-    {%- if cart.item_count > 0 -%}
+    {%- if effective_item_count > 0 -%}
       <span class="text-lg font-normal text-bark/40 ml-2">
-        ({{ cart.item_count }}
-        {{ cart.item_count | pluralize: 'item', 'items' }})
+        ({{ effective_item_count }}
+        {{ effective_item_count | pluralize: 'item', 'items' }})
       </span>
     {%- endif -%}
   </h1>
@@ -26,94 +35,96 @@
             <!-- Cart items -->
             <div id="cart-items-container">
               {%- for item in cart.items -%}
-                <div
-                  class="cart-item grid grid-cols-12 gap-4 items-center px-6 py-5 border-b border-bark/10 last:border-0"
-                  id="cart-item-{{ item.key }}"
-                >
-                  <!-- Product -->
-                  <div class="col-span-12 md:col-span-6 flex gap-4 items-center">
-                    <a
-                      href="{{ item.url }}"
-                      class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block"
-                    >
-                      {%- if item.image -%}
-                        {{
-                          item.image
-                          | image_url: width: 160
-                          | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
-                        }}
-                      {%- else -%}
-                        <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
-                      {%- endif -%}
-                    </a>
-                    <div class="flex-1 min-w-0">
+                {%- unless item.properties._gift_wrap == 'true' -%}
+                  <div
+                    class="cart-item grid grid-cols-12 gap-4 items-center px-6 py-5 border-b border-bark/10 last:border-0"
+                    id="cart-item-{{ item.key }}"
+                  >
+                    <!-- Product -->
+                    <div class="col-span-12 md:col-span-6 flex gap-4 items-center">
                       <a
                         href="{{ item.url }}"
-                        class="block text-sm font-medium text-bark hover:text-custom-green transition-colors truncate"
+                        class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block"
                       >
-                        {{ item.product.title }}
+                        {%- if item.image -%}
+                          {{
+                            item.image
+                            | image_url: width: 160
+                            | image_tag: class: 'w-full h-full object-cover', alt: item.image.alt, loading: 'lazy'
+                          }}
+                        {%- else -%}
+                          <div class="w-full h-full flex items-center justify-center text-2xl">🥭</div>
+                        {%- endif -%}
                       </a>
-                      {%- unless item.product.has_only_default_variant -%}
-                        <div class="text-xs text-bark/50 mt-0.5">
-                          {{ item.variant.title }}
-                        </div>
-                      {%- endunless -%}
-                      {%- if item.properties.size > 0 -%}
-                        <div class="mt-1 space-y-0.5">
-                          {%- for property in item.properties -%}
-                            {%- unless property.last == blank -%}
-                              <div class="text-[10px] text-bark/50">{{ property.first }}: {{ property.last }}</div>
-                            {%- endunless -%}
-                          {%- endfor -%}
-                        </div>
-                      {%- endif -%}
-                      <button
-                        class="cart-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer"
-                        data-item-key="{{ item.key }}"
-                        aria-label="Remove {{ item.product.title }}"
-                      >
-                        Remove
-                      </button>
+                      <div class="flex-1 min-w-0">
+                        <a
+                          href="{{ item.url }}"
+                          class="block text-sm font-medium text-bark hover:text-custom-green transition-colors truncate"
+                        >
+                          {{ item.product.title }}
+                        </a>
+                        {%- unless item.product.has_only_default_variant -%}
+                          <div class="text-xs text-bark/50 mt-0.5">
+                            {{ item.variant.title }}
+                          </div>
+                        {%- endunless -%}
+                        {%- if item.properties.size > 0 -%}
+                          <div class="mt-1 space-y-0.5">
+                            {%- for property in item.properties -%}
+                              {%- unless property.last == blank -%}
+                                <div class="text-[10px] text-bark/50">{{ property.first }}: {{ property.last }}</div>
+                              {%- endunless -%}
+                            {%- endfor -%}
+                          </div>
+                        {%- endif -%}
+                        <button
+                          class="cart-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer"
+                          data-item-key="{{ item.key }}"
+                          aria-label="Remove {{ item.product.title }}"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-span-4 md:col-span-2 text-sm text-bark/70 md:text-center">
+                      <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Price</span>
+                      {{ item.price | money }}
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="col-span-4 md:col-span-2 flex items-center md:justify-center">
+                      <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
+                        <button
+                          class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
+                          data-item-key="{{ item.key }}"
+                          data-action="decrease"
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span class="w-8 text-center text-sm font-medium text-bark cart-qty-value">
+                          {{ item.quantity }}
+                        </span>
+                        <button
+                          class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
+                          data-item-key="{{ item.key }}"
+                          data-action="increase"
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Line total -->
+                    <div class="col-span-4 md:col-span-2 text-sm font-medium text-mango-dark md:text-right">
+                      <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Total</span>
+                      {{ item.line_price | money }}
                     </div>
                   </div>
-
-                  <!-- Price -->
-                  <div class="col-span-4 md:col-span-2 text-sm text-bark/70 md:text-center">
-                    <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Price</span>
-                    {{ item.price | money }}
-                  </div>
-
-                  <!-- Quantity -->
-                  <div class="col-span-4 md:col-span-2 flex items-center md:justify-center">
-                    <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
-                      <button
-                        class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
-                        data-item-key="{{ item.key }}"
-                        data-action="decrease"
-                        aria-label="Decrease quantity"
-                      >
-                        −
-                      </button>
-                      <span class="w-8 text-center text-sm font-medium text-bark cart-qty-value">
-                        {{ item.quantity }}
-                      </span>
-                      <button
-                        class="cart-qty-btn w-7 h-7 bg-sand flex items-center justify-center text-bark hover:bg-sand-dark transition-colors text-sm cursor-pointer"
-                        data-item-key="{{ item.key }}"
-                        data-action="increase"
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Line total -->
-                  <div class="col-span-4 md:col-span-2 text-sm font-medium text-mango-dark md:text-right">
-                    <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Total</span>
-                    {{ item.line_price | money }}
-                  </div>
-                </div>
+                {%- endunless -%}
               {%- endfor -%}
             </div>
           </div>
@@ -157,17 +168,22 @@
               <div class="text-xs text-bark/50 mt-0.5">Premium kraft wrap + message card (+₱35)</div>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
+              {%- assign gift_id_number = settings.global_gift_wrap_variant_id | plus: 0 -%}
+              {%- assign gift_items = cart.items | where: 'variant_id', gift_id_number -%}
+
               <input
                 type="checkbox"
                 id="cart-gift-toggle"
-                class="sr-only peer"
-                {% if cart.attributes.gift_wrapping == 'true' %}
+                class="sr-only peer drawer-gift-toggle"
+                data-gift-variant-id="{{ settings.global_gift_wrap_variant_id }}"
+                {% if gift_items.size > 0 %}
                   checked
                 {% endif %}
               >
               <div
                 class="
-                  w-9 h-5 bg-bark/20 rounded-full transition-colors peer-checked:bg-custom-green
+                  relative w-9 h-5 bg-bark/20 rounded-full transition-colors cursor-pointer
+                  peer-checked:bg-custom-green
                   after:content-[''] after:absolute after:top-0.5 after:left-0.5
                   after:bg-white after:rounded-full after:h-4 after:w-4
                   after:transition-all peer-checked:after:translate-x-4
@@ -177,7 +193,7 @@
           </div>
           <div
             id="gift-message-wrap"
-            class="{% unless cart.attributes.gift_wrapping == 'true' %}hidden{% endunless %} mt-3"
+            class="{% if gift_items.size == 0 %}hidden{% endif %} mt-3"
           >
             <input
               type="text"
@@ -188,7 +204,6 @@
             >
           </div>
         </div>
-
         <!-- ORDER SUMMARY -->
         <div class="bg-white border border-bark/10 rounded-xl p-5">
           <div class="text-sm font-medium text-bark mb-4">Order Summary</div>
@@ -271,18 +286,3 @@
 </div>
 
 <script src="{{ 'cart.js' | asset_url }}" defer></script>
-
-{% schema %}
-{
-  "name": "Main Cart",
-  "settings": [
-    {
-      "type": "number",
-      "id": "free_shipping_threshold",
-      "label": "Free shipping threshold (₱)",
-      "default": 1500
-    }
-  ],
-  "presets": [{ "name": "Main Cart" }]
-}
-{% endschema %}
