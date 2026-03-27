@@ -86,6 +86,9 @@ class CartItems extends HTMLElement {
       });
     });
 
+    const hiddenAttr = document.getElementById('gift-attr-input');
+    if (hiddenAttr) hiddenAttr.value = giftMessageInput.value;
+
     const cartNote = document.getElementById('cart-note');
     cartNote?.addEventListener('change', async () => {
       await fetch('/cart/update.js', {

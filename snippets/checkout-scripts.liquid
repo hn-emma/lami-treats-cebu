@@ -1,0 +1,23 @@
+{%- if template == 'cart' -%}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const checkoutLinks = document.querySelectorAll('a[href="/checkout"]');
+      checkoutLinks.forEach((link) => {
+        link.addEventListener('click', async function (e) {
+          e.preventDefault();
+
+          const note = document.getElementById('cart-note')?.value;
+          if (note !== undefined) {
+            await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ note }),
+            });
+          }
+
+          window.location.href = '/checkout';
+        });
+      });
+    });
+  </script>
+{%- endif -%}
