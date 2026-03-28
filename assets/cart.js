@@ -1,3 +1,5 @@
+const GIFT_WRAP_VARIANT_ID = parseInt(document.body.dataset.giftWrapId || '0');
+
 function getCartErrorMessage(error, response) {
   if (!navigator.onLine) return CartErrors.network_error;
   if (response?.status === 422) {
@@ -69,12 +71,18 @@ const CartAPI = {
 };
 
 function updateCartBadge(cartOrCount) {
-  let count;
-  if (typeof cartOrCount === 'object') {
+  let count = 0;
+
+  if (typeof cartOrCount === 'object' && cartOrCount.items) {
+    count = cartOrCount.items.reduce((total, item) => {
+      return item.variant_id === GIFT_WRAP_VARIANT_ID ? total : total + item.quantity;
+    }, 0);
+  } else if (typeof cartOrCount === 'object') {
     count = cartOrCount.item_count;
   } else {
     count = cartOrCount;
   }
+
   document.querySelectorAll('.cart-count-badge').forEach((badge) => {
     badge.textContent = count;
     badge.style.display = count > 0 ? 'flex' : 'none';
@@ -84,7 +92,7 @@ function updateCartBadge(cartOrCount) {
 async function handleGiftWrapToggle(toggle, onSuccess) {
   const variantId = toggle.dataset.giftVariantId;
   if (!variantId) {
-    showErrorNotification('Gift wrap is not configured. Please contact us for assistance.', 'Gift Wrap Unavailable');
+    showErrorNotification('Gift wrap is not configured. Please contact support.', 'Gift Wrap Unavailable');
     return;
   }
 

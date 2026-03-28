@@ -23,7 +23,7 @@
     {%- endif -%}
   </head>
 
-  <body class="font-body bg-white text-bark antialiased">
+  <body class="font-body bg-white text-bark antialiased" data-gift-wrap-id="{{ settings.global_gift_wrap_variant_id }}">
     {% section 'header' %}
     <main>
       {{ content_for_layout }}
