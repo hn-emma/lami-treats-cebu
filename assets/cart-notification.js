@@ -33,26 +33,29 @@ class CartNotification extends HTMLElement {
     this.fetchContent();
   }
 
-  fetchContent() {
-    fetch('/cart?section_id=cart-notification')
-      .then((r) => {
-        if (!r.ok) throw new Error('Notification fetch failed');
-        return r.text();
-      })
-      .then((html) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const section = doc.querySelector('#shopify-section-cart-notification');
+  async fetchContent() {
+    try {
+      const response = await fetch('/cart?section_id=cart-notification');
 
-        if (section) {
-          this.innerHTML = section.innerHTML;
-          this.bindEvents();
-          this.animateIn();
-          this.startAutoClose();
-        } else {
-          this.remove();
-        }
-      })
-      .catch(() => this.remove());
+      if (!response.ok) throw new Error('Notification fetch failed');
+
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const section = doc.querySelector('#shopify-section-cart-notification');
+
+      if (!section) {
+        this.remove();
+        return;
+      }
+
+      this.innerHTML = section.innerHTML;
+      this.bindEvents();
+      this.animateIn();
+      this.startAutoClose();
+    } catch (error) {
+      console.error('Cart Notification Error:', error);
+      this.remove();
+    }
   }
 
   bindEvents() {

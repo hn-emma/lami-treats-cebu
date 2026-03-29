@@ -18,7 +18,7 @@
         "hero_image_2": "shopify://shop_images/Puto-Cheese.jpg",
         "hero_image_3": "shopify://shop_images/7D-dried-mangoes.jpg",
         "primary_btn_label": "Shop All Pasalubong",
-        "primary_btn_url": "shopify://collections/all"
+      "primary_btn_url": "shopify://collections/all"
       }
     },
     "trust": {
@@ -87,7 +87,7 @@
     "story": {
       "type": "story-section",
       "settings": {
-        "label": "Our Story",
+        "label": "My Story",
         "title": "From Cebu to You 🌴",
         "description": "Every trip back home to Boljoon, Cebu, four hours south of the city, past the centuries-old Boljoon Church and just before the whale sharks of Oslob, meant passing roadside stopover stores packed with pasalubong. Sometimes merchants even hopped on the bus, walking the aisle with Chicharon and Torta. \n\nOne day I thought: why isn't this online? So, I built Lami Treats Cebu! Because every single treat here is, well, lami!",
         "image": "shopify://shop_images/image0.jpg",
