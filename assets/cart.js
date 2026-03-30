@@ -11,64 +11,77 @@ function getCartErrorMessage(error, response) {
   return CartErrors.generic;
 }
 
-const CartAPI = {
-  async updateItem(key, quantity) {
-    const response = await fetch('/cart/change.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: key, quantity }),
+const CartAPI = (() => {
+  async function handleShopifyError(response) {
+    const data = await response.json().catch(() => ({}));
+    const message = data.description ?? data.message ?? 'An unexpected error occurred.';
+
+    showErrorNotification(message, `Error ${response.status}`);
+
+    return Promise.reject({
+      status: response.status,
+      message: message,
     });
-    if (!response.ok) return handleShopifyError(response);
-    return response.json();
-  },
+  }
+  return {
+    async updateItem(key, quantity) {
+      const response = await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: key, quantity }),
+      });
+      if (!response.ok) return handleShopifyError(response);
+      return response.json();
+    },
 
-  async updateAttributes(attributes) {
-    const response = await fetch('/cart/update.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attributes }),
-    });
-    if (!response.ok) throw new Error('Cart attribute update failed');
-    return response.json();
-  },
+    async updateAttributes(attributes) {
+      const response = await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attributes }),
+      });
+      if (!response.ok) throw new Error('Cart attribute update failed');
+      return response.json();
+    },
 
-  async getCart() {
-    const response = await fetch('/cart.js');
-    if (!response.ok) throw new Error('Cart fetch failed');
-    return response.json();
-  },
+    async getCart() {
+      const response = await fetch('/cart.js');
+      if (!response.ok) throw new Error('Cart fetch failed');
+      return response.json();
+    },
 
-  async clearCart() {
-    const response = await fetch('/cart/clear.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!response.ok) throw new Error('Cart clear failed');
-    return response.json();
-  },
+    async clearCart() {
+      const response = await fetch('/cart/clear.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Cart clear failed');
+      return response.json();
+    },
 
-  async addItem(variantId, quantity = 1, properties = {}) {
-    const response = await fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: variantId, quantity, properties }),
-    });
+    async addItem(variantId, quantity = 1, properties = {}) {
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity, properties }),
+      });
 
-    console.log('Add item response', response);
-    if (!response.ok) return handleShopifyError(response);
-    return response.json();
-  },
+      console.log('Add item response', response);
+      if (!response.ok) return handleShopifyError(response);
+      return response.json();
+    },
 
-  async updateAll(updates) {
-    const response = await fetch('/cart/update.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ updates }),
-    });
-    if (!response.ok) throw new Error('Cart global update failed');
-    return response.json();
-  },
-};
+    async updateAll(updates) {
+      const response = await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ updates }),
+      });
+      if (!response.ok) throw new Error('Cart global update failed');
+      return response.json();
+    },
+  };
+})();
 
 function updateCartBadge(cartOrCount) {
   let count = 0;
@@ -88,7 +101,6 @@ function updateCartBadge(cartOrCount) {
     badge.style.display = count > 0 ? 'flex' : 'none';
   });
 }
-
 async function handleGiftWrapToggle(toggle, onSuccess) {
   const variantId = toggle.dataset.giftVariantId;
   if (!variantId) {
@@ -428,15 +440,13 @@ class CartDrawer extends HTMLElement {
     });
 
     const giftToggle = this.querySelector('.drawer-gift-toggle');
-    const giftMessageWrap = this.querySelector('.gift-message-wrap');
+    const giftMessageWrap = this.querySelector('#gift-message-wrap');
     giftToggle?.addEventListener('change', async () => {
       if (giftMessageWrap) {
         giftMessageWrap.classList.toggle('hidden', !giftToggle.checked);
       }
 
-      await handleGiftWrapToggle(giftToggle, () => {
-        this.fetchDrawerContent();
-      });
+      await handleGiftWrapToggle(giftToggle, () => {});
     });
 
     this.querySelector('.drawer-clear-cart-btn')?.addEventListener('click', async () => {
