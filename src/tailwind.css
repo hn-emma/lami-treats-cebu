@@ -19,3 +19,28 @@
 .price-loading {
   @apply animate-pulse bg-sand-dark text-transparent rounded pointer-events-none min-w-[60px] inline-block;
 }
+
+.shopify-challenge__container {
+  padding: 100px 20px !important;
+  background-color: #FFB800; /* Your Mango Color */
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.shopify-challenge__message {
+  font-family: 'YourDisplayFont', sans-serif !important;
+  color: #3E2723; /* Your Bark Color */
+  font-size: 1.5rem !important;
+  margin-bottom: 20px !important;
+}
+
+.shopify-challenge__button {
+  background-color: #3E2723 !important;
+  color: #FFE082 !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+  text-transform: uppercase;
+  font-weight: bold;
+}
