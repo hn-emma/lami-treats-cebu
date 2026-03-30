@@ -11,7 +11,9 @@
   "sections": {
     "main_search": {
       "type": "main-search",
-      "settings": {}
+      "settings": {
+        "featured_collection": "featured-products"
+      }
     }
   },
   "order": [
