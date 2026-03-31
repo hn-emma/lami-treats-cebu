@@ -546,7 +546,7 @@ document.addEventListener('click', async function (e) {
   const originalContent = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = `
-    <svg class="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+    <svg class="w-full h-3 animate-spin" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
     </svg>`;
 

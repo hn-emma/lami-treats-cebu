@@ -219,23 +219,4 @@ document.addEventListener('DOMContentLoaded', function () {
       this.classList.remove('opacity-60', 'cursor-not-allowed');
     }
   });
-
-  document.addEventListener('click', async function (e) {
-    const btn = e.target.closest('.add-to-cart-btn');
-    if (!btn || !btn.dataset.variantId) return;
-
-    try {
-      await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: parseInt(btn.dataset.variantId),
-          quantity: 1,
-        }),
-      });
-      if (typeof openCartDrawer === 'function') openCartDrawer();
-    } catch (error) {
-      console.error('Add to cart failed', error);
-    }
-  });
 });
