@@ -66,7 +66,6 @@ const CartAPI = (() => {
         body: JSON.stringify({ id: variantId, quantity, properties }),
       });
 
-      console.log('Add item response', response);
       if (!response.ok) return handleShopifyError(response);
       return response.json();
     },
@@ -85,6 +84,7 @@ const CartAPI = (() => {
 
 function updateCartBadge(cartOrCount) {
   let count = 0;
+  let totalPrice = 0;
 
   if (typeof cartOrCount === 'object' && cartOrCount.items) {
     count = cartOrCount.items.reduce((total, item) => {
@@ -96,10 +96,27 @@ function updateCartBadge(cartOrCount) {
     count = cartOrCount;
   }
 
+  const formatted = (totalPrice / 100).toLocaleString('en-PH', {
+    style: 'currency',
+    currency: 'PHP',
+  });
+
   document.querySelectorAll('.cart-count-badge').forEach((badge) => {
     badge.textContent = count;
     badge.style.display = count > 0 ? 'flex' : 'none';
   });
+
+  const subtotalEl = document.getElementById('cart-subtotal');
+  const totalEl = document.getElementById('cart-total');
+
+  if (subtotalEl) {
+    subtotalEl.classList.remove('price-loading');
+    subtotalEl.textContent = formatted;
+  }
+  if (totalEl) {
+    totalEl.classList.remove('price-loading');
+    totalEl.textContent = formatted;
+  }
 }
 async function handleGiftWrapToggle(toggle, onSuccess) {
   const variantId = toggle.dataset.giftVariantId;
@@ -479,6 +496,12 @@ class CartDrawer extends HTMLElement {
       itemEl.style.opacity = '0.4';
       itemEl.style.pointerEvents = 'none';
     }
+
+    const priceElements = document.querySelectorAll(
+      '#cart-subtotal, #cart-total, #drawer-subtotal, .checkout-total-price',
+    );
+
+    priceElements.forEach((item) => item.classList.add('price-loading'));
 
     try {
       const cart = await CartAPI.updateItem(key, newQty);

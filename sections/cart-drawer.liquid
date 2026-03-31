@@ -1,14 +1,24 @@
 <div class="cart-drawer-inner flex flex-col h-full">
-  <!-- HEADER -->
+  {%- assign gift_wrap_id = settings.global_gift_wrap_variant_id | plus: 0 -%}
+  {%- assign effective_item_count = 0 -%}
+
+  {%- for item in cart.items -%}
+    {%- unless item.variant_id == gift_wrap_id -%}
+      {%- assign effective_item_count = effective_item_count | plus: item.quantity -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
   <div class="flex items-center justify-between px-5 py-4 border-b border-bark/10 flex-shrink-0">
     <div class="flex items-center gap-2">
       <span class="font-display text-lg font-bold text-bark">Your Cart</span>
-      <span
-        class="bg-custom-green text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center"
-        id="drawer-item-count"
-      >
-        {{ cart.item_count }}
-      </span>
+      {%- if effective_item_count > 0 -%}
+        <span
+          class="bg-custom-green text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center"
+          id="drawer-item-count"
+        >
+          {{ effective_item_count }}
+        </span>
+      {%- endif -%}
     </div>
     <button
       class="cart-drawer-close w-8 h-8 rounded-full border border-bark/10 flex items-center justify-center text-sm text-bark hover:bg-sand transition-colors cursor-pointer"
