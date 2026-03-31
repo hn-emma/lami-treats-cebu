@@ -82,9 +82,8 @@ const CartAPI = (() => {
   };
 })();
 
-function updateCartBadge(cartOrCount) {
+async function updateCartBadge(cartOrCount) {
   let count = 0;
-  let totalPrice = 0;
 
   if (typeof cartOrCount === 'object' && cartOrCount.items) {
     count = cartOrCount.items.reduce((total, item) => {
@@ -96,14 +95,15 @@ function updateCartBadge(cartOrCount) {
     count = cartOrCount;
   }
 
-  const formatted = (totalPrice / 100).toLocaleString('en-PH', {
+  const cart = await CartAPI.getCart();
+
+  const formatted = (cart.total_price / 100).toLocaleString('en-PH', {
     style: 'currency',
     currency: 'PHP',
   });
 
   document.querySelectorAll('.cart-count-badge').forEach((badge) => {
     badge.textContent = count;
-    badge.style.display = count > 0 ? 'flex' : 'none';
   });
 
   const subtotalEl = document.getElementById('cart-subtotal');
