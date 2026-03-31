@@ -12,7 +12,7 @@
     Your Cart
     {%- if effective_item_count > 0 -%}
       <span class="text-lg font-normal text-bark/40 ml-2">
-        ({{ effective_item_count }}
+        (<span class="cart-count-badge">{{ effective_item_count }} </span>
         {{ effective_item_count | pluralize: 'item', 'items' }})
       </span>
     {%- endif -%}
