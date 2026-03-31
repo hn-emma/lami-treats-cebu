@@ -15,9 +15,7 @@
       </button>
     </div>
 
-    <!-- Product details -->
     <div class="px-5 py-4 flex gap-4 items-center">
-      <!-- Thumbnail -->
       <a
         href="{{ last_item.url }}"
         class="w-20 h-20 rounded-xl overflow-hidden bg-sand flex-shrink-0 block border border-bark/8"
@@ -33,7 +31,6 @@
         {%- endif -%}
       </a>
 
-      <!-- Info -->
       <div class="flex-1 min-w-0">
         <a
           href="{{ last_item.url }}"
@@ -59,7 +56,6 @@
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="px-5 pb-5 flex gap-3 border-t border-bark/8 pt-4">
       <a
         href="{{ routes.cart_url }}"

@@ -13,7 +13,6 @@
                 data-url="{{ product.url }}"
                 data-title="{{ product.title | escape }}"
               >
-                <!-- Product image -->
                 <div class="w-10 h-10 rounded-lg bg-sand overflow-hidden flex-shrink-0">
                   {%- if product.featured_image -%}
                     {{
@@ -26,7 +25,6 @@
                   {%- endif -%}
                 </div>
 
-                <!-- Product info -->
                 <div class="flex-1 min-w-0">
                   <div class="text-sm font-medium text-bark truncate">
                     {{ product.title }}
@@ -38,7 +36,6 @@
                   {%- endif -%}
                 </div>
 
-                <!-- Price -->
                 <div class="text-xs font-medium text-mango-dark flex-shrink-0">
                   {{ product.price | money }}
                 </div>
@@ -47,7 +44,6 @@
           {%- endfor -%}
         </ul>
 
-        <!-- See all results link -->
         <div class="border-t border-bark/10 mt-2 pt-2 px-3 pb-1">
           <a
             href="{{ routes.search_url }}?type=product&q={{ predictive_search.terms | url_encode }}"
@@ -58,7 +54,6 @@
         </div>
       </div>
     {%- else -%}
-      <!-- No results state -->
       <div class="p-4 text-center">
         <div class="text-2xl mb-2 opacity-30">🔍</div>
         <p class="text-xs text-bark/50">No results for "{{ predictive_search.terms }}"</p>

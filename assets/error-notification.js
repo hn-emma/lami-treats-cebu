@@ -26,7 +26,6 @@ class ErrorNotification extends HTMLElement {
   `;
   }
 
-  // Show with a message — can be called directly
   show(message, title = 'Something went wrong') {
     this.innerHTML = `
       <div>
@@ -53,7 +52,6 @@ class ErrorNotification extends HTMLElement {
     this.addEventListener('mouseenter', () => clearTimeout(this.autoCloseTimer));
     this.addEventListener('mouseleave', () => this.startAutoClose());
 
-    // Animate in
     requestAnimationFrame(() => {
       this.style.opacity = '1';
       this.style.transform = 'translateX(0)';

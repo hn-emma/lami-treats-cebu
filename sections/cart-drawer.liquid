@@ -18,7 +18,6 @@
     </button>
   </div>
 
-  <!-- CART ITEMS -->
   <div class="flex-1 overflow-y-auto px-5 py-4">
     {%- if cart.item_count > 0 -%}
       <div class="space-y-0 divide-y divide-bark/8">
@@ -28,7 +27,6 @@
               class="cart-drawer-item flex gap-3 py-4"
               id="drawer-item-{{ item.key }}"
             >
-              <!-- Image -->
               <a href="{{ item.url }}" class="w-16 h-16 rounded-xl overflow-hidden bg-sand flex-shrink-0 block">
                 {%- if item.image -%}
                   {{
@@ -41,7 +39,6 @@
                 {%- endif -%}
               </a>
 
-              <!-- Info -->
               <div class="flex-1 min-w-0">
                 <a
                   href="{{ item.url }}"
@@ -90,7 +87,6 @@
                   </span>
                 </div>
 
-                <!-- Remove -->
                 <button
                   class="drawer-remove-btn text-[10px] text-red-400 hover:text-red-600 transition-colors mt-1.5 cursor-pointer block"
                   data-item-key="{{ item.key }}"
@@ -117,10 +113,8 @@
     {%- endif -%}
   </div>
 
-  <!-- FOOTER -->
   {%- if cart.item_count > 0 -%}
     <div class="flex-shrink-0 border-t border-bark/10 px-5 py-4 bg-sand space-y-3">
-      <!-- Gift toggle -->
       <div class="flex items-center justify-between">
         <div>
           <div class="text-xs font-medium text-bark">🎁 Gift Wrapping</div>
@@ -162,7 +156,6 @@
         >
       </div>
 
-      <!-- Totals -->
       <div class="flex items-center justify-between text-sm">
         <span class="text-bark/60">Subtotal</span>
         <span class="font-medium text-bark" id="drawer-subtotal">
@@ -170,7 +163,6 @@
         </span>
       </div>
 
-      <!-- Buttons -->
       <a
         href="/checkout"
         class="block w-full bg-custom-green text-white text-center font-medium text-sm py-3 rounded-xl hover:bg-custom-green-dark transition-colors"

@@ -36,17 +36,14 @@
         }
 
         grid.innerHTML = data.products.map(p => {
-          // Logic for Badges
           const isSale = p.compare_at_price > p.price;
           const isNew = p.tags && p.tags.includes('new');
           
-          // Format Price (PHP)
           const formatPrice = (num) => (num / 100).toLocaleString('en-PH', { 
             style: 'currency', 
             currency: 'PHP' 
           });
 
-          // Clean up description (Strip HTML and Truncate)
           const shortDesc = p.description 
             ? p.description.replace(/<[^>]*>/g, '').substring(0, 70) + '...'
             : '';

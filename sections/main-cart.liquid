@@ -20,11 +20,9 @@
 
   {%- if cart.item_count > 0 -%}
     <div class="grid md:grid-cols-3 gap-8 items-start">
-      <!-- CART ITEMS -->
       <div class="md:col-span-2">
         <cart-items>
           <div class="bg-white rounded-2xl border border-bark/10 overflow-hidden">
-            <!-- Table header -->
             <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-bark/10 text-[10px] font-medium uppercase tracking-wider text-bark/40">
               <div class="col-span-6">Product</div>
               <div class="col-span-2 text-center">Price</div>
@@ -32,7 +30,6 @@
               <div class="col-span-2 text-right">Total</div>
             </div>
 
-            <!-- Cart items -->
             <div id="cart-items-container">
               {%- for item in cart.items -%}
                 {%- unless item.properties._gift_wrap == 'true' -%}
@@ -40,7 +37,6 @@
                     class="cart-item grid grid-cols-12 gap-4 items-center px-6 py-5 border-b border-bark/10 last:border-0"
                     id="cart-item-{{ item.key }}"
                   >
-                    <!-- Product -->
                     <div class="col-span-12 md:col-span-6 flex gap-4 items-center">
                       <a
                         href="{{ item.url }}"
@@ -87,13 +83,11 @@
                       </div>
                     </div>
 
-                    <!-- Price -->
                     <div class="col-span-4 md:col-span-2 text-sm text-bark/70 md:text-center">
                       <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Price</span>
                       {{ item.price | money }}
                     </div>
 
-                    <!-- Quantity -->
                     <div class="col-span-4 md:col-span-2 flex items-center md:justify-center">
                       <div class="flex items-center border border-bark/15 rounded-lg overflow-hidden">
                         <button
@@ -118,7 +112,6 @@
                       </div>
                     </div>
 
-                    <!-- Line total -->
                     <div class="col-span-4 md:col-span-2 text-sm font-medium text-mango-dark md:text-right">
                       <span class="md:hidden text-[10px] text-bark/40 block mb-0.5">Total</span>
                       <span class="cart-line-total">{{ item.line_price | money }}</span>
@@ -130,7 +123,6 @@
           </div>
         </cart-items>
 
-        <!-- ORDER NOTE -->
         <div class="mt-4">
           <label
             for="cart-note"
@@ -147,7 +139,6 @@
           >{{ cart.note }}</textarea>
         </div>
 
-        <!-- CONTINUE SHOPPING -->
         <div class="mt-4">
           <a
             href="{{ routes.all_products_collection_url }}"
@@ -158,9 +149,7 @@
         </div>
       </div>
 
-      <!-- ORDER SUMMARY SIDEBAR -->
       <div class="space-y-4">
-        <!-- GIFT WRAPPING -->
         <div class="bg-white border border-bark/10 rounded-xl p-4">
           <div class="flex items-center justify-between">
             <div>
@@ -204,7 +193,6 @@
             >
           </div>
         </div>
-        <!-- ORDER SUMMARY -->
         <div class="bg-white border border-bark/10 rounded-xl p-5">
           <div class="text-sm font-medium text-bark mb-4">Order Summary</div>
 
@@ -231,7 +219,6 @@
             </div>
           </div>
 
-          <!-- CHECKOUT BUTTON -->
           <a
             href="/checkout"
             class="block w-full bg-custom-green text-white text-center font-medium text-sm py-3.5 rounded-xl hover:bg-custom-green-dark transition-colors"
@@ -240,7 +227,6 @@
           </a>
         </div>
 
-        <!-- PAYMENT ICONS -->
         <div class="flex flex-wrap items-center justify-center gap-2">
           {%- assign payment_methods = 'Credit Card,Cash on Delivery' | split: ',' -%}
           {%- for method in payment_methods -%}
@@ -253,7 +239,6 @@
     </div>
 
   {%- else -%}
-    <!-- EMPTY CART STATE -->
     <div class="text-center py-20 max-w-sm mx-auto">
       <div class="text-6xl mb-5 opacity-20">🛒</div>
       <h2 class="font-display text-xl font-bold text-bark mb-3">Your cart is empty</h2>
