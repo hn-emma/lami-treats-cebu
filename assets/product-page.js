@@ -99,6 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
               document.getElementById('atc-label').textContent = 'Sold Out';
             }
           }
+
+          const url = new URL(window.location.href);
+          url.searchParams.set('variant', matchedVariant.id);
+          history.replaceState({ variant: matchedVariant.id }, '', url.toString());
         }
       });
     });
