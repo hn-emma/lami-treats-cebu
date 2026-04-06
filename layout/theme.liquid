@@ -33,6 +33,8 @@
     <script src="{{ 'cart-notification.js' | asset_url }}" defer></script>
     <script src="{{ 'error-notification.js' | asset_url }}" defer></script>
 
-    {% render 'checkout-scripts' %}
+    {%- if template == 'cart' -%}
+      <script src="{{ 'save-checkout-note.js' | asset_url }}" defer></script>
+    {%- endif -%}
   </body>
 </html>
