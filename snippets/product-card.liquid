@@ -49,8 +49,8 @@
         {%- endif -%}
       </div>
       <button
-        class="w-8 h-8 bg-custom-green rounded-full text-white flex items-center justify-center hover:bg-custom-green-dark transition-colors duration-200 add-to-cart-btn cursor-pointer"
-        data-variant-id="{{ product.variants.first.id }}"
+        class="add-to-cart-btn w-8 h-8 bg-custom-green rounded-full text-white flex items-center justify-center hover:bg-custom-green-dark transition-colors duration-200 cursor-pointer"
+        data-variant-id="{{ product.selected_or_first_available_variant.id }}"
         aria-label="Add {{ product.title }} to cart"
       >
         <svg

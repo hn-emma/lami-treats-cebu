@@ -200,13 +200,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const atcBtn = document.getElementById('add-to-cart-btn');
 
   atcBtn?.addEventListener('click', async function () {
-    console.log('HERE');
     const variantId = document.getElementById('selected-variant-id')?.value;
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
     const giftMessage = document.getElementById('gift-message-input')?.value;
     const hasGift = document.getElementById('gift-toggle')?.checked;
 
-    console.log('SELECTED VARIANT ID ON ADD TO CART CLICK: ', variantId);
     if (!variantId) return;
 
     const label = document.getElementById('atc-label');
@@ -239,6 +237,20 @@ document.addEventListener('DOMContentLoaded', function () {
       if (typeof showCartNotification === 'function') {
         setTimeout(() => showCartNotification(), 300);
       }
+
+      fetch('/cart.js')
+        .then((response) => response.json())
+        .then((cart) => {
+          const actualCount = cart.item_count;
+
+          document.querySelectorAll('.cart-count-badge').forEach((badge) => {
+            badge.textContent = actualCount;
+
+            if (actualCount > 0) {
+              badge.classList.remove('hidden');
+            }
+          });
+        });
 
       setTimeout(() => {
         label.textContent = originalLabel;

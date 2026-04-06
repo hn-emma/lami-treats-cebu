@@ -29,9 +29,9 @@
       {{ content_for_layout }}
     </main>
     {% section 'footer' %}
-    <script src="{{ 'cart.js' | asset_url }}" async></script>
-    <script src="{{ 'cart-notification.js' | asset_url }}" async></script>
-    <script src="{{ 'error-notification.js' | asset_url }}" async></script>
+    <script src="{{ 'cart.js' | asset_url }}" defer></script>
+    <script src="{{ 'cart-notification.js' | asset_url }}" defer></script>
+    <script src="{{ 'error-notification.js' | asset_url }}" defer></script>
 
     {% render 'checkout-scripts' %}
   </body>
