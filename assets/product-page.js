@@ -16,8 +16,7 @@ function switchImage(src, thumbBtn) {
     btn.classList.replace('border-mango', 'border-transparent');
   });
 
-  thumbBtn.classList.add('border-mango');
-  thumbBtn.classList.remove('border-transparent');
+  thumbBtn.classList.replace('border-transparent', 'border-mango');
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -25,6 +24,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const qtyInput = document.getElementById('product-qty');
   const minusBtn = document.getElementById('qty-minus');
   const plusBtn = document.getElementById('qty-plus');
+  const productThumbnails = document.querySelectorAll('.product-thumb');
+
+  const url = new URL(window.location.href);
+  const variantId = url.searchParams.get('variant');
+
+  if (variantId) {
+    const selectedThumbBtn = document.querySelector(`.product-thumb[data-variant-ids*="${variantId}"]`);
+
+    if (selectedThumbBtn) {
+      selectedThumbBtn.classList.add('border-mango');
+      selectedThumbBtn.classList.remove('border-transparent');
+    }
+  }
 
   if (!qtyDisplay || !qtyInput) return;
 
@@ -48,6 +60,33 @@ document.addEventListener('DOMContentLoaded', function () {
   if (variantComponent) {
     const variants = JSON.parse(variantComponent.dataset.product || '[]');
 
+    productThumbnails.forEach((thumbBtn) => {
+      thumbBtn.addEventListener('click', function () {
+        const variantId = this.dataset.variantIds?.split(' ').find((id) => variants.some((v) => v.id == id));
+
+        if (variantId) {
+          const matchedVariant = variants.find((v) => v.id == variantId);
+
+          if (matchedVariant) {
+            matchedVariant.options.forEach((optionValue, index) => {
+              const position = index + 1;
+
+              const selectedButton = document.querySelector(
+                `.variant-btn[data-option-position="${position}"][data-option-value="${optionValue}"]`,
+              );
+
+              if (selectedButton) {
+                selectedButton.click();
+              }
+
+              url.searchParams.set('variant', matchedVariant.id);
+              history.replaceState({ variant: matchedVariant.id }, '', url.toString());
+            });
+          }
+        }
+      });
+    });
+
     document.querySelectorAll('.variant-btn').forEach((btn) => {
       btn.addEventListener('click', function () {
         const position = parseInt(this.dataset.optionPosition);
@@ -55,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.querySelectorAll(`.variant-btn[data-option-position="${position}"]`).forEach((b) => {
           b.classList.remove('border-custom-green', 'bg-custom-green/5', 'text-custom-green', 'font-medium');
-          b.classList.add('border-bark/15', 'text-bark/70');
+          b.classList.add('border-bark/15', 'text-bark/70', 'bg-red');
         });
 
         this.classList.add('border-custom-green', 'bg-custom-green/5', 'text-custom-green', 'font-medium');
@@ -100,7 +139,31 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           }
 
-          const url = new URL(window.location.href);
+          if (matchedVariant.featured_image && matchedVariant.featured_image.src) {
+            const newImageSrc = matchedVariant.featured_image.src;
+            const mainImg = document.getElementById('main-product-image');
+
+            if (mainImg) {
+              mainImg.style.opacity = '0';
+
+              setTimeout(() => {
+                mainImg.removeAttribute('srcset');
+                mainImg.src = newImageSrc;
+
+                mainImg.style.opacity = '1';
+              }, 150);
+            }
+          }
+
+          document.querySelectorAll('.product-thumb').forEach((btn) => {
+            btn.classList.replace('border-mango', 'border-transparent');
+          });
+
+          const selectedThumbBtn = document.querySelector(`.product-thumb[data-variant-ids*="${matchedVariant.id}"]`);
+          if (selectedThumbBtn) {
+            selectedThumbBtn.classList.replace('border-transparent', 'border-mango');
+          }
+
           url.searchParams.set('variant', matchedVariant.id);
           history.replaceState({ variant: matchedVariant.id }, '', url.toString());
         }
@@ -137,11 +200,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const atcBtn = document.getElementById('add-to-cart-btn');
 
   atcBtn?.addEventListener('click', async function () {
+    console.log('HERE');
     const variantId = document.getElementById('selected-variant-id')?.value;
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
     const giftMessage = document.getElementById('gift-message-input')?.value;
     const hasGift = document.getElementById('gift-toggle')?.checked;
 
+    console.log('SELECTED VARIANT ID ON ADD TO CART CLICK: ', variantId);
     if (!variantId) return;
 
     const label = document.getElementById('atc-label');
@@ -193,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   buyNowBtn?.addEventListener('click', async function () {
     const variantId = document.getElementById('selected-variant-id')?.value;
+    console.log('SELECTED VARIANT ID ON BUY NOW CLICK: ', variantId);
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
 
     if (!variantId) return;
