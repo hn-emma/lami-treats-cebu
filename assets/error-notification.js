@@ -16,36 +16,14 @@ class ErrorNotification extends HTMLElement {
         <span>⚠️</span>
         <span class="text-[13px] font-medium text-custom-green">${title}</span>
       </div>
-      <button class="error-notification-close w-6 h-6 rounded-full border border-custom-green/20 flex items-center justify-center text-[11px] text-custom-green hover:bg-custom-green/5">
+      <button class="error-notification-close w-6 h-6 rounded-full border border-custom-green/20 flex items-center justify-center text-[11px] text-custom-green hover:bg-custom-green/5 cursor-pointer">
         ✕
       </button>
     </div>
     <div class="p-4">
       <p class="text-[12px] text-bark/60 leading-relaxed m-0">${message}</p>
     </div>
-  `;
-  }
-
-  show(message, title = 'Something went wrong') {
-    this.innerHTML = `
-      <div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(199,91,60,0.12);">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:15px;">⚠️</span>
-            <span style="font-size:13px;font-weight:500;color:#C75B3C;">${title}</span>
-          </div>
-          <button
-            class="error-notification-close"
-            style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(199,91,60,0.2);background:transparent;display:flex;align-items:center;justify-content:center;font-size:11px;color:#C75B3C;cursor:pointer;">
-            ✕
-          </button>
-        </div>
-        <div style="padding:14px 18px;">
-          <p style="font-size:12px;color:rgba(28,18,8,0.6);line-height:1.7;margin:0;">
-            ${message}
-          </p>
-        </div>
-      </div>`;
+    `;
 
     this.querySelector('.error-notification-close')?.addEventListener('click', () => this.close());
 
