@@ -3,7 +3,6 @@ class CollectionFilters extends HTMLElement {
     super();
     this.abortController = null;
 
-    this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handlePopState = this.handlePopState.bind(this);
   }
@@ -13,29 +12,19 @@ class CollectionFilters extends HTMLElement {
   }
 
   connectedCallback() {
-    document.addEventListener('change', this.handleChange);
     document.addEventListener('click', this.handleClick);
     window.addEventListener('popstate', this.handlePopState);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('change', this.handleChange);
     document.removeEventListener('click', this.handleClick);
     window.removeEventListener('popstate', this.handlePopState);
-  }
-
-  handleChange(e) {
-    const input = e.target.closest('.filter-checkbox');
-    if (input) {
-      const url = input.checked ? input.dataset.addUrl : input.dataset.removeUrl;
-      if (url) this.fetchSection(url);
-    }
   }
 
   handleClick(e) {
     const target = e.target;
 
-    const removeBtn = target.closest('.filter-remove-btn, .filter-clear-btn');
+    const removeBtn = target.closest('.filter-clear-btn');
     if (removeBtn) {
       const url = removeBtn.dataset.url || removeBtn.dataset.removeUrl;
       if (url) {

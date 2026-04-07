@@ -101,7 +101,7 @@
 
       {%- unless product.has_only_default_variant -%}
         <product-variants
-          data-product="{{ product.variants | json | escape }}"
+          data-product-variants="{{ product.variants | json | escape }}"
           data-currency="{{ cart.currency.iso_code }}"
         >
           {%- for option in product.options_with_values -%}

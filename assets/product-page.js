@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const variantComponent = document.querySelector('product-variants');
   if (variantComponent) {
-    const variants = JSON.parse(variantComponent.dataset.product || '[]');
+    const variants = JSON.parse(variantComponent.dataset.productVariants || '[]');
 
     productThumbnails.forEach((thumbBtn) => {
       thumbBtn.addEventListener('click', function () {
@@ -182,28 +182,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  const estimateBtn = document.getElementById('estimate-btn');
-  const zipInput = document.getElementById('zip-input');
-  const shippingResult = document.getElementById('shipping-result');
-
-  estimateBtn?.addEventListener('click', function () {
-    if (!zipInput?.value.trim()) return;
-
-    shippingResult?.classList.remove('hidden');
-    shippingResult.innerHTML = '✓ Estimated delivery: 3–5 business days · ₱100 standard';
-  });
-
-  zipInput?.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') estimateBtn?.click();
-  });
-
   const atcBtn = document.getElementById('add-to-cart-btn');
 
   atcBtn?.addEventListener('click', async function () {
     const variantId = document.getElementById('selected-variant-id')?.value;
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
-    const giftMessage = document.getElementById('gift-message-input')?.value;
-    const hasGift = document.getElementById('gift-toggle')?.checked;
 
     if (!variantId) return;
 
@@ -212,12 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
     label.textContent = 'Adding...';
     atcBtn.disabled = true;
 
-    const itemProperties = {};
-    if (hasGift) {
-      itemProperties['Gift Wrapping'] = 'Yes (+₱35)';
-      if (giftMessage) itemProperties['Gift Message'] = giftMessage;
-    }
-
     try {
       const response = await fetch('/cart/add.js', {
         method: 'POST',
@@ -225,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function () {
         body: JSON.stringify({
           id: parseInt(variantId),
           quantity,
-          properties: Object.keys(itemProperties).length > 0 ? itemProperties : undefined,
         }),
       });
 
@@ -270,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   buyNowBtn?.addEventListener('click', async function () {
     const variantId = document.getElementById('selected-variant-id')?.value;
-    console.log('SELECTED VARIANT ID ON BUY NOW CLICK: ', variantId);
     const quantity = parseInt(document.getElementById('product-qty')?.value || '1');
 
     if (!variantId) return;
